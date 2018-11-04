@@ -81,4 +81,4 @@ bytes which tie them to a specific network.  The SetNet and IsForNet functions
 are provided to set and determinine which network an extended key is associated
 with.
 */
-package hdkeychain
+package bip32

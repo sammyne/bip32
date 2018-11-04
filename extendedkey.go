@@ -2,7 +2,7 @@
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
-package hdkeychain
+package bip32
 
 // References:
 //   [BIP32]: BIP0032 - Hierarchical Deterministic Wallets
