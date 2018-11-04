@@ -10,9 +10,39 @@ import (
 	"github.com/btcsuite/btcd/chaincfg"
 )
 
-func GenerateMasterKey(reader io.Reader, netID *[4]byte,
+func GenerateMasterKey(rand io.Reader, keyID Magic,
 	strength ...int) (*ExtendedKey, error) {
-	return nil, nil
+	seedLen := RecommendedSeedLen
+	if len(strength) > 0 && strength[0] >= MinSeedBytes &&
+		strength[0] <= MaxSeedBytes {
+		seedLen = strength[0]
+	}
+
+	seed := make([]byte, seedLen)
+	//if n, err := rand.Read(seed); nil != err || n != seedLen {
+	//	return nil, ErrNoEnoughEntropy
+	//}
+	if _, err := io.ReadFull(rand, seed); nil != err {
+		return nil, ErrNoEnoughEntropy
+	}
+
+	// I = HMAC-SHA512(Key = "Bitcoin seed", Data = S)
+	hmac512 := hmac.New(sha512.New, masterKey)
+	hmac512.Write(seed)
+	I := hmac512.Sum(nil)
+
+	secretKey, chainCode := I[:len(I)/2], I[len(I)/2:]
+	// Ensure the key in usable.
+	if x := new(big.Int).SetBytes(secretKey); 0 == x.Sign() ||
+		x.Cmp(btcec.S256().N) >= 0 {
+		return nil, ErrUnusableSeed
+	}
+
+	// fingerprint of parent
+	parentFP := []byte{0x00, 0x00, 0x00, 0x00}
+
+	return NewExtendedKey(keyID[:], secretKey, chainCode,
+		parentFP, 0, 0, true), nil
 }
 
 // NewMaster creates a new master node for use in creating a hierarchical
