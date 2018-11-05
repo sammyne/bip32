@@ -2,8 +2,11 @@ package bip32
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"io"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -11,6 +14,9 @@ import (
 //go:generate go run golden.go
 
 const GoldenBase = "testdata"
+const GoldenName = "bip32.golden"
+
+var GoldenPath = filepath.Join(GoldenBase, GoldenName)
 
 var Seeds = []string{
 	"000102030405060708090a0b0c0d0e0f",
@@ -60,4 +66,14 @@ func (path Path) ChildIndices() ([]*ChildIndex, error) {
 
 func NewEntropyReader(hexStr string) io.Reader {
 	return hex.NewDecoder(strings.NewReader(hexStr))
+}
+
+func ReadGoldenJSON(name string, golden interface{}) error {
+	fd, err := os.Open(filepath.Join(GoldenBase, name))
+	if nil != err {
+		return err
+	}
+	defer fd.Close()
+
+	return json.NewDecoder(fd).Decode(golden)
 }

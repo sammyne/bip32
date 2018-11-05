@@ -5,7 +5,6 @@ package main
 import (
 	"encoding/json"
 	"os"
-	"path/filepath"
 
 	"github.com/sammy00/bip32"
 )
@@ -17,7 +16,6 @@ type Goldie = bip32.Goldie
 type ChainGoldie = bip32.ChainGoldie
 
 func main() {
-	goldenName := filepath.Join(bip32.GoldenBase, "chains.golden")
 	goldies := []Goldie{
 		{
 			Seed: "000102030405060708090a0b0c0d0e0f",
@@ -106,7 +104,8 @@ func main() {
 		},
 	}
 
-	fd, err := os.OpenFile(goldenName, os.O_CREATE|os.O_WRONLY, 0600)
+	//goldenName := bip32.GoldenPath
+	fd, err := os.OpenFile(bip32.GoldenPath, os.O_CREATE|os.O_WRONLY, 0600)
 	if nil != err {
 		panic(err)
 	}
