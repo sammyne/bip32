@@ -2,6 +2,10 @@ package bip32
 
 import (
 	"bytes"
+	"crypto/hmac"
+	"crypto/sha512"
+	"encoding/binary"
+	"math/big"
 
 	"github.com/btcsuite/btcutil"
 
@@ -21,7 +25,63 @@ func (priv *PrivateKey) AddressPubKeyHash() []byte {
 }
 
 func (priv *PrivateKey) Child(i uint32) (ExtendedKey00, error) {
-	panic("not implemented")
+	// Prevent derivation of children beyond the max allowed depth.
+	if priv.Level == maxUint8 {
+		return nil, ErrDeriveBeyondMaxDepth
+	}
+
+	// There are four scenarios that could happen here:
+	// 1) Private extended key -> Hardened child private extended key
+	// 2) Private extended key -> Non-hardened child private extended key
+	// 3) Public extended key -> Non-hardened child public extended key
+	// 4) Public extended key -> Hardened child public extended key (INVALID!)
+	// where only #1, #2 is applicable in our context
+
+	data := make([]byte, KeyDataLen+ChildIndexLen)
+	if i < HardenedKeyStart { // normal
+		copy(data, priv.publicKeyData())
+	} else { // harden
+		data[0] = 0x00
+		ReverseCopy(data[1:KeyDataLen], priv.Data)
+	}
+	binary.BigEndian.PutUint32(data[KeyDataLen:], i)
+
+	// Take the HMAC-SHA512 of the current key's chain code and the derived
+	// data:
+	//   I = HMAC-SHA512(Key = chainCode, Data = data)
+	hmac512 := hmac.New(sha512.New, priv.ChainCode)
+	hmac512.Write(data)
+	I := hmac512.Sum(nil)
+
+	IL, chainCode := I[:len(I)/2], I[len(I)/2:]
+
+	// Both derived public or private keys rely on treating the left 32-byte
+	// sequence calculated above (Il) as a 256-bit integer that must be
+	// within the valid range for a secp256k1 private key.  There is a small
+	// chance (< 1 in 2^127) this condition will not hold, and in that case,
+	// a child extended key can't be created for this index and the caller
+	// should simply increment to the next index.
+	z, usable := ToUsableScalar(IL)
+	if !usable {
+		return nil, ErrInvalidChild
+	}
+
+	// Case #1 or #2.
+	// Add the parent private key to the intermediate private key to
+	// derive the final child key.
+	//
+	// childKey = parse256(Il) + parenKey
+	k := new(big.Int).SetBytes(priv.Data)
+	z.Add(z, k)
+	z.Mod(z, secp256k1Curve.N)
+	childData := z.Bytes()
+
+	// The fingerprint of the parent for the derived child is the first 4
+	// bytes of the RIPEMD160(SHA256(parentPubKey)).
+	parentFP := priv.AddressPubKeyHash()[:FingerprintLen]
+
+	return NewPrivateKey(priv.Version, priv.Level+1, parentFP, i,
+		chainCode, childData), nil
 }
 
 func (priv *PrivateKey) Depth() uint8 {
