@@ -1,17 +1,23 @@
 package bip32
 
 import (
+	"bytes"
+
+	"github.com/btcsuite/btcutil"
+
 	"github.com/btcsuite/btcd/btcec"
+	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/sammy00/base58"
 )
 
 type PrivateKey struct {
 	PublicKey
-	Data []byte
+	Data    []byte
+	Version []byte
 }
 
 func (priv *PrivateKey) AddressPubKeyHash() []byte {
-	panic("not implemented")
+	return btcutil.Hash160(priv.publicKeyData())
 }
 
 func (priv *PrivateKey) Child(i uint32) (ExtendedKey00, error) {
@@ -19,35 +25,54 @@ func (priv *PrivateKey) Child(i uint32) (ExtendedKey00, error) {
 }
 
 func (priv *PrivateKey) Depth() uint8 {
-	panic("not implemented")
+	return priv.Level
 }
 
 func (priv *PrivateKey) Hardened() bool {
-	panic("not implemented")
+	return priv.ChildIndex >= HardenedKeyStart
 }
 
 func (priv *PrivateKey) HardenedChild(i uint32) (ExtendedKey00, error) {
 	panic("not implemented")
 }
 
-func (priv *PrivateKey) IsForNet(netID Magic) bool {
-	panic("not implemented")
+func (priv *PrivateKey) Index() uint32 {
+	return priv.PublicKey.Index()
 }
 
-func (priv *PrivateKey) Neuter() ExtendedKey00 {
-	panic("not implemented")
+func (priv *PrivateKey) IsForNet(keyID Magic) bool {
+	return bytes.Equal(priv.Version, keyID[:])
+}
+
+func (priv *PrivateKey) Neuter() (*PublicKey, error) {
+	// Get the associated public extended key version bytes.
+	version, err := chaincfg.HDPrivateKeyToPublicKeyID(priv.Version)
+	if err != nil {
+		return nil, err
+	}
+
+	pub := priv.PublicKey // copy the common part
+
+	// and update the different parts
+	pub.Version = version
+
+	data := priv.publicKeyData()
+	pub.Data = make([]byte, len(data))
+	copy(pub.Data, data)
+
+	return &pub, nil
 }
 
 func (priv *PrivateKey) ParentFingerprint() uint32 {
-	panic("not implemented")
+	return priv.PublicKey.ParentFingerprint()
 }
 
-func (priv *PrivateKey) Public() *btcec.PublicKey {
-	panic("not implemented")
+func (priv *PrivateKey) Public() (*btcec.PublicKey, error) {
+	return btcec.ParsePubKey(priv.publicKeyData(), secp256k1Curve)
 }
 
-func (priv *PrivateKey) SetNet(netID Magic) {
-	panic("not implemented")
+func (priv *PrivateKey) SetNet(keyID Magic) {
+	priv.Version = keyID[:]
 }
 
 func (priv *PrivateKey) String() string {
@@ -67,13 +92,26 @@ func (priv *PrivateKey) String() string {
 }
 
 func (priv *PrivateKey) ToECPrivate() *btcec.PrivateKey {
-	panic("not implemented")
+	privKey, _ := btcec.PrivKeyFromBytes(secp256k1Curve, priv.Data)
+
+	return privKey
+}
+
+func (priv *PrivateKey) publicKeyData() []byte {
+	if 0 == len(priv.PublicKey.Data) {
+		x, y := secp256k1Curve.ScalarBaseMult(priv.Data)
+		pubKey := btcec.PublicKey{Curve: secp256k1Curve, X: x, Y: y}
+
+		priv.PublicKey.Data = pubKey.SerializeCompressed()
+	}
+
+	return priv.PublicKey.Data
 }
 
 func NewPrivateKey(version []byte, depth uint8, parentFP []byte, index uint32,
 	chainCode, data []byte) *PrivateKey {
 	pub := PublicKey{
-		Version:    version,
+		//Version:    version,
 		Level:      depth,
 		ParentFP:   parentFP,
 		ChildIndex: index,
@@ -81,7 +119,13 @@ func NewPrivateKey(version []byte, depth uint8, parentFP []byte, index uint32,
 		//Data:       data,
 	}
 
-	return &PrivateKey{PublicKey: pub, Data: data}
+	priv := &PrivateKey{PublicKey: pub, Data: data, Version: version}
+
+	// derive public key eagerly
+	// this should be considered more seriously
+	//priv.PublicKey.Data = derivePublicKey(priv.Data)
+
+	return priv
 }
 
 func ParsePrivateKey(data58 string) (*PrivateKey, error) {
@@ -94,9 +138,16 @@ func ParsePrivateKey(data58 string) (*PrivateKey, error) {
 		PublicKey: *pub,
 		Data:      pub.Data[1:],
 	}
+	priv.Version = priv.PublicKey.Version
+	priv.PublicKey.Data, priv.PublicKey.Version = nil, nil
 
-	// don't miss to nil out the public key data
-	priv.PublicKey.Data = nil
+	// load the public key data eagerly
+	/*
+		x, y := secp256k1Curve.ScalarBaseMult(priv.Data)
+		pubKey := btcec.PublicKey{Curve: secp256k1Curve, X: x, Y: y}
+		priv.PublicKey.Data = pubKey.SerializeCompressed()
+	*/
+	//priv.PublicKey.Data = derivePublicKey(priv.Data)
 
 	return priv, nil
 }

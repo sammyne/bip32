@@ -3,8 +3,27 @@ package bip32
 import (
 	"encoding/binary"
 
+	"github.com/btcsuite/btcd/btcec"
 	"github.com/sammy00/base58"
 )
+
+func appendMeta(buf []byte, pub *PublicKey) []byte {
+	var childIndex [ChildIndexLen]byte
+	binary.BigEndian.PutUint32(childIndex[:], pub.ChildIndex)
+
+	// The serialized format of meta is:
+	// depth (1) || parent fingerprint (4)) || child num (4) || chain code (32)
+	// note the missing version and data fields
+
+	//str := make([]byte, 0, KeyLen-VersionLen)
+	//str = append(str, pub.Version...)
+	buf = append(buf, pub.Level)
+	buf = append(buf, pub.ParentFP...)
+	buf = append(buf, childIndex[:]...)
+	buf = append(buf, pub.ChainCode...)
+
+	return buf
+}
 
 // decodePublicKey decodes a public key out of the given base58-check encoded
 // key string.
@@ -49,20 +68,10 @@ func decodePublicKey(data58 string) (*PublicKey, error) {
 	return pub, nil
 }
 
-func appendMeta(buf []byte, pub *PublicKey) []byte {
-	var childIndex [ChildIndexLen]byte
-	binary.BigEndian.PutUint32(childIndex[:], pub.ChildIndex)
+func derivePublicKey(priv []byte) []byte {
+	// load the public key data eagerly
+	x, y := secp256k1Curve.ScalarBaseMult(priv)
+	pubKey := btcec.PublicKey{Curve: secp256k1Curve, X: x, Y: y}
 
-	// The serialized format of meta is:
-	// depth (1) || parent fingerprint (4)) || child num (4) || chain code (32)
-	// note the missing version and data fields
-
-	//str := make([]byte, 0, KeyLen-VersionLen)
-	//str = append(str, pub.Version...)
-	buf = append(buf, pub.Level)
-	buf = append(buf, pub.ParentFP...)
-	buf = append(buf, childIndex[:]...)
-	buf = append(buf, pub.ChainCode...)
-
-	return buf
+	return pubKey.SerializeCompressed()
 }
