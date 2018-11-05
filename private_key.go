@@ -92,10 +92,6 @@ func (priv *PrivateKey) Hardened() bool {
 	return priv.ChildIndex >= HardenedKeyStart
 }
 
-func (priv *PrivateKey) HardenedChild(i uint32) (ExtendedKey00, error) {
-	panic("not implemented")
-}
-
 func (priv *PrivateKey) Index() uint32 {
 	return priv.PublicKey.Index()
 }

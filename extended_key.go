@@ -7,7 +7,6 @@ type ExtendedKey00 interface {
 	Child(i uint32) (ExtendedKey00, error)
 	Depth() uint8
 	Hardened() bool
-	//HardenedChild(i uint32) (ExtendedKey00, error)
 	Index() uint32
 	IsForNet(keyID Magic) bool
 	ParentFingerprint() uint32
