@@ -1,0 +1,68 @@
+package bip32
+
+import (
+	"encoding/binary"
+
+	"github.com/sammy00/base58"
+)
+
+// decodePublicKey decodes a public key out of the given base58-check encoded
+// key string.
+// Note: the decoded key goes through format check only, no on-curve check
+func decodePublicKey(data58 string) (*PublicKey, error) {
+	version, decoded, err := base58.CheckDecodeX(data58, VersionLen)
+	if nil != err {
+		return nil, err
+	}
+
+	if KeyLen != len(decoded)+VersionLen {
+		return nil, ErrInvalidKeyLen
+	}
+
+	pub := new(PublicKey)
+	// The serialized format is:
+	//   version (4) || depth (1) || parent fingerprint (4)) ||
+	//   child num (4) || chain code (32) || key data (33)
+	// where the version has separated from decoded
+
+	// decompose the decoded payload into fields
+	//a, b := 0, VersionLen
+	//pub.Version = decoded[a:b]
+	pub.Version = version
+
+	//a, b = b, b+DepthLen
+	a, b := 0, DepthLen
+	pub.Level = decoded[a:b][0]
+
+	a, b = b, b+FingerprintLen
+	pub.ParentFP = decoded[a:b]
+
+	a, b = b, b+ChildIndexLen
+	pub.ChildIndex = binary.BigEndian.Uint32(decoded[a:b])
+
+	a, b = b, b+ChainCodeLen
+	pub.ChainCode = decoded[a:b]
+
+	a, b = b, b+KeyDataLen
+	pub.Data = decoded[a:b]
+
+	return pub, nil
+}
+
+func appendMeta(buf []byte, pub *PublicKey) []byte {
+	var childIndex [ChildIndexLen]byte
+	binary.BigEndian.PutUint32(childIndex[:], pub.ChildIndex)
+
+	// The serialized format of meta is:
+	// depth (1) || parent fingerprint (4)) || child num (4) || chain code (32)
+	// note the missing version and data fields
+
+	//str := make([]byte, 0, KeyLen-VersionLen)
+	//str = append(str, pub.Version...)
+	buf = append(buf, pub.Level)
+	buf = append(buf, pub.ParentFP...)
+	buf = append(buf, childIndex[:]...)
+	buf = append(buf, pub.ChainCode...)
+
+	return buf
+}
