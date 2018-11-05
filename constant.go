@@ -28,3 +28,15 @@ const (
 	// maxUint8 is the max positive integer which can be serialized in a uint8
 	maxUint8 = 1<<8 - 1
 )
+
+// length constants about fields of key serialization
+const (
+	VersionLen     = 4
+	DepthLen       = 1
+	FingerprintLen = 4
+	ChildIndexLen  = 4
+	ChainCodeLen   = 32
+	KeyDataLen     = 33
+	KeyLen         = VersionLen + DepthLen + FingerprintLen +
+		ChildIndexLen + ChainCodeLen + KeyDataLen
+)
