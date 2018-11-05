@@ -17,6 +17,9 @@ func (priv *PrivateKey) Depth() uint8 {
 	panic("not implemented")
 }
 
+func (priv *PrivateKey) Hardened() bool {
+	panic("not implemented")
+}
 func (priv *PrivateKey) HardenedChild(i uint32) (ExtendedKey00, error) {
 	panic("not implemented")
 }

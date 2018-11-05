@@ -6,10 +6,12 @@ type ExtendedKey00 interface {
 	AddressPubKeyHash() []byte
 	Child(i uint32) (ExtendedKey00, error)
 	Depth() uint8
-	HardenedChild(i uint32) (ExtendedKey00, error)
-	IsForNet(netID Magic) bool
+	Hardened() bool
+	//HardenedChild(i uint32) (ExtendedKey00, error)
+	Index() uint32
+	IsForNet(keyID Magic) bool
 	ParentFingerprint() uint32
-	Public() *btcec.PublicKey
-	SetNet(netID Magic)
+	Public() (*btcec.PublicKey, error)
+	SetNet(keyID Magic)
 	String() string
 }
