@@ -23,25 +23,28 @@ func GenerateMasterKey(rand io.Reader, keyID Magic,
 		return nil, ErrNoEnoughEntropy
 	}
 
-	// I = HMAC-SHA512(Key = "Bitcoin seed", Data = S)
-	hmac512 := hmac.New(sha512.New, masterKey)
-	hmac512.Write(seed)
-	I := hmac512.Sum(nil)
+	/*
+		// I = HMAC-SHA512(Key = "Bitcoin seed", Data = S)
+		hmac512 := hmac.New(sha512.New, masterKey)
+		hmac512.Write(seed)
+		I := hmac512.Sum(nil)
 
-	secretKey, chainCode := I[:len(I)/2], I[len(I)/2:]
-	// Ensure the key in usable.
-	if x := new(big.Int).SetBytes(secretKey); 0 == x.Sign() ||
-		x.Cmp(btcec.S256().N) >= 0 {
-		return nil, ErrUnusableSeed
-	}
+		secretKey, chainCode := I[:len(I)/2], I[len(I)/2:]
+		// Ensure the key in usable.
+		if x := new(big.Int).SetBytes(secretKey); 0 == x.Sign() ||
+			x.Cmp(btcec.S256().N) >= 0 {
+			return nil, ErrUnusableSeed
+		}
 
-	// fingerprint of parent
-	parentFP := []byte{0x00, 0x00, 0x00, 0x00}
+		// fingerprint of parent
+		parentFP := []byte{0x00, 0x00, 0x00, 0x00}
 
-	//return NewExtendedKey(keyID[:], secretKey, chainCode,
-	//	parentFP, 0, 0, true), nil
+		//return NewExtendedKey(keyID[:], secretKey, chainCode,
+		//	parentFP, 0, 0, true), nil
 
-	return NewPrivateKey(keyID[:], 0, parentFP, 0, chainCode, secretKey), nil
+		return NewPrivateKey(keyID[:], 0, parentFP, 0, chainCode, secretKey), nil
+	*/
+	return newMaster(seed, keyID)
 }
 
 // NewMaster creates a new master node for use in creating a hierarchical
@@ -79,4 +82,35 @@ func NewMaster(seed []byte, net *chaincfg.Params) (*ExtendedKey, error) {
 	parentFP := []byte{0x00, 0x00, 0x00, 0x00}
 	return NewExtendedKey(net.HDPrivateKeyID[:], secretKey, chainCode,
 		parentFP, 0, 0, true), nil
+}
+
+func NewMasterKey(seed []byte, keyID Magic) (*PrivateKey, error) {
+	// Per [BIP32], the seed must be in range [MinSeedBytes, MaxSeedBytes].
+	if len(seed) < MinSeedBytes || len(seed) > MaxSeedBytes {
+		return nil, ErrInvalidSeedLen
+	}
+
+	return newMaster(seed, keyID)
+}
+
+func newMaster(seed []byte, keyID Magic) (*PrivateKey, error) {
+	// I = HMAC-SHA512(Key = "Bitcoin seed", Data = S)
+	hmac512 := hmac.New(sha512.New, masterKey)
+	hmac512.Write(seed)
+	I := hmac512.Sum(nil)
+
+	secretKey, chainCode := I[:len(I)/2], I[len(I)/2:]
+	// Ensure the key in usable.
+	if x := new(big.Int).SetBytes(secretKey); 0 == x.Sign() ||
+		x.Cmp(btcec.S256().N) >= 0 {
+		return nil, ErrUnusableSeed
+	}
+
+	// fingerprint of parent
+	parentFP := []byte{0x00, 0x00, 0x00, 0x00}
+
+	//return NewExtendedKey(keyID[:], secretKey, chainCode,
+	//	parentFP, 0, 0, true), nil
+
+	return NewPrivateKey(keyID[:], 0, parentFP, 0, chainCode, secretKey), nil
 }
