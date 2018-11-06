@@ -1,6 +1,7 @@
 package bip32_test
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/sammy00/base58"
@@ -179,13 +180,20 @@ func TestPrivateKey_Child_OK2(t *testing.T) {
 		c := c
 
 		t.Run("", func(st *testing.T) {
+			cache := make(map[string]*bip32.PrivateKey)
+
 			for _, chain := range c.Chains {
 				expect := chain.ExtendedPrivateKey
 
-				priv, err := bip32.GenerateMasterKey(bip32.NewEntropyReader(
-					c.Seed), *bip32.MainNetPrivateKey, len(c.Seed)/2)
-				if nil != err {
-					st.Fatal(err)
+				priv, ok := cache["m"]
+				if !ok {
+					master, err := bip32.GenerateMasterKey(bip32.NewEntropyReader(
+						c.Seed), *bip32.MainNetPrivateKey, len(c.Seed)/2)
+					if nil != err {
+						st.Fatal(err)
+					}
+
+					priv = master
 				}
 
 				indices, err := chain.Path.ChildIndices()
@@ -193,10 +201,18 @@ func TestPrivateKey_Child_OK2(t *testing.T) {
 					st.Fatal(err)
 				}
 
+				path := "m"
 				for _, index := range indices {
 					j := index.Index
+					path += "/" + strconv.Itoa(int(j))
 					if index.Hardened {
 						j = bip32.HardenIndex(j)
+						path += "H"
+					}
+
+					if cached, ok := cache[path]; ok {
+						priv = cached
+						continue
 					}
 
 					extKey, err := priv.Child(j)
@@ -212,21 +228,8 @@ func TestPrivateKey_Child_OK2(t *testing.T) {
 				if got := priv.String(); got != expect {
 					st.Fatalf("invalid private key: got %s, expect %s", got, expect)
 				}
-				/*
-					childs, _ := chain.Path.ChildIndices()
-					if 0 == len(childs) {
-						extKey, err := bip32.GenerateMasterKey(bip32.NewEntropyReader(
-							c.Seed), bip32.MainNetPrivateKey, len(c.Seed)/2)
 
-						if nil != err {
-							st.Fatal(err)
-						}
-
-						priv = bip32.ExtendedKeyToPrivateKey(extKey)
-					} else {
-						path := "m"
-					}
-				*/
+				cache[path] = priv
 			}
 		})
 	}
