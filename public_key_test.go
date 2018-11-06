@@ -113,6 +113,7 @@ func TestPublicKey_AddressPubKeyHash(t *testing.T) {
 	}
 }
 
+/*
 func TestPublicKey_Child_Ok(t *testing.T) {
 	// The public extended keys for test vectors in [BIP32].
 	testVec1MasterPubKey := "xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8"
@@ -232,6 +233,31 @@ tests:
 				test.name, pubStr, test.wantPub)
 			continue
 		}
+	}
+}
+*/
+
+func TestPublicKey_Child_OK2(t *testing.T) {
+	testCases := readChildGoldie(t, true)
+
+	for _, c := range testCases {
+		c := c
+
+		t.Run("", func(st *testing.T) {
+			parent, err := bip32.ParsePublicKey(c.parent)
+			if nil != err {
+				st.Fatal(err)
+			}
+
+			child, err := parent.Child(c.index)
+			if nil != err {
+				st.Fatal(err)
+			}
+
+			if got := child.String(); got != c.child {
+				st.Fatalf("invalid child: got %s, expect %s", got, c.child)
+			}
+		})
 	}
 }
 

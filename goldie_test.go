@@ -7,6 +7,12 @@ import (
 	"github.com/sammy00/bip32"
 )
 
+type childGoldie struct {
+	parent string
+	index  uint32
+	child  string // the expected child string
+}
+
 type generateMasterKeyExpect struct {
 	key string
 	bad bool
@@ -67,4 +73,53 @@ func readInGenerateMasterKeyGoldie(t *testing.T) []*generateMasterKeyGoldie {
 	}
 
 	return append(goods, bads...)
+}
+
+func readChildGoldie(t *testing.T, pub bool) []*childGoldie {
+	var goldens, addOn []*bip32.Goldie
+
+	if !pub {
+		if err := bip32.ReadGoldenJSON(bip32.GoldenName, &goldens); nil != err {
+			t.Fatal(err)
+		}
+	}
+	if err := bip32.ReadGoldenJSON(bip32.GoldenAddOnName, &addOn); nil != err {
+		t.Fatal(err)
+	}
+
+	goldens = append(goldens, addOn...)
+
+	var goldies []*childGoldie
+	for _, v := range goldens {
+		var parent string
+
+		if pub {
+			parent = v.Chains[0].ExtendedPublicKey
+		} else {
+			parent = v.Chains[0].ExtendedPrivateKey
+		}
+
+		for _, child := range v.Chains[1:] {
+			indices, err := child.Path.ChildIndices()
+			if nil != err {
+				t.Fatal(err)
+			}
+
+			goldie := &childGoldie{
+				parent: parent,
+				index:  indices[len(indices)-1].Index,
+			}
+
+			if pub {
+				goldie.child = child.ExtendedPublicKey
+			} else {
+				goldie.child = child.ExtendedPrivateKey
+			}
+			parent = goldie.child
+
+			goldies = append(goldies, goldie)
+		}
+	}
+
+	return goldies
 }
