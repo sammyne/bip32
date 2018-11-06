@@ -15,6 +15,7 @@ import (
 
 const GoldenBase = "testdata"
 const GoldenName = "bip32.golden"
+const GoldenAddOnName = "bip32_addon.golden"
 
 var GoldenPath = filepath.Join(GoldenBase, GoldenName)
 

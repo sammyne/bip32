@@ -19,9 +19,6 @@ func GenerateMasterKey(rand io.Reader, keyID Magic,
 	}
 
 	seed := make([]byte, seedLen)
-	//if n, err := rand.Read(seed); nil != err || n != seedLen {
-	//	return nil, ErrNoEnoughEntropy
-	//}
 	if _, err := io.ReadFull(rand, seed); nil != err {
 		return nil, ErrNoEnoughEntropy
 	}

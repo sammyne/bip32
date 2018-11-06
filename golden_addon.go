@@ -105,17 +105,6 @@ func main() {
 			path:     []uint32{0, 2147483647, 1, 2147483646, 2},
 			wantPriv: "xprvA48ALo8BDjcRET68R5RsPzF3H7WeyYYtHcyUeLRGBPHXu6CJSGjwW7dWoeUWTEzT7LG3qk6Eg6x2ZoqD8gtyEFZecpAyvchksfLyg3Zbqam",
 		},
-
-		/*
-			// Custom tests to trigger specific conditions.
-			{
-				// Seed 000000000000000000000000000000da.
-				name:     "Derived privkey with zero high byte m/0",
-				master:   "xprv9s21ZrQH143K4FR6rNeqEK4EBhRgLjWLWhA3pw8iqgAKk82ypz58PXbrzU19opYcxw8JDJQF4id55PwTsN1Zv8Xt6SKvbr2KNU5y8jN8djz",
-				path:     []uint32{0},
-				wantPriv: "xprv9uC5JqtViMmgcAMUxcsBCBFA7oYCNs4bozPbyvLfddjHou4rMiGEHipz94xNaPb1e4f18TRoPXfiXx4C3cDAcADqxCSRSSWLvMBRWPctSN9",
-			},
-		*/
 	}
 
 	seeds := map[string]string{
@@ -192,8 +181,18 @@ func main() {
 }
 
 func oneMore() *Goldie {
+	/*
+		// Custom tests to trigger specific conditions.
+		{
+			// Seed 000000000000000000000000000000da.
+			name:     "Derived privkey with zero high byte m/0",
+			master:   "xprv9s21ZrQH143K4FR6rNeqEK4EBhRgLjWLWhA3pw8iqgAKk82ypz58PXbrzU19opYcxw8JDJQF4id55PwTsN1Zv8Xt6SKvbr2KNU5y8jN8djz",
+			path:     []uint32{0},
+			wantPriv: "xprv9uC5JqtViMmgcAMUxcsBCBFA7oYCNs4bozPbyvLfddjHou4rMiGEHipz94xNaPb1e4f18TRoPXfiXx4C3cDAcADqxCSRSSWLvMBRWPctSN9",
+		},
+	*/
 	goldie := &Goldie{
-		Seed: " 000000000000000000000000000000da",
+		Seed: "000000000000000000000000000000da",
 		Chains: []ChainGoldie{
 			{
 				Path:               "m",

@@ -42,6 +42,7 @@ func TestPrivateKey_AddressPubKeyHash(t *testing.T) {
 	}
 }
 
+/*
 func TestPrivateKey_Child_OK(t *testing.T) {
 	// The private extended keys for test vectors in [BIP32].
 	testVec1MasterPrivKey := "xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi"
@@ -171,10 +172,14 @@ tests:
 		}
 	}
 }
+*/
 
 func TestPrivateKey_Child_OK2(t *testing.T) {
-	var testCases []bip32.Goldie
+	var testCases, addOn []bip32.Goldie
 	bip32.ReadGoldenJSON(bip32.GoldenName, &testCases)
+	bip32.ReadGoldenJSON(bip32.GoldenAddOnName, &addOn)
+
+	testCases = append(testCases, addOn...)
 
 	for _, c := range testCases {
 		c := c
