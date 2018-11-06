@@ -179,14 +179,14 @@ func TestPrivateKey_Child_OK2(t *testing.T) {
 		c := c
 
 		t.Run("", func(st *testing.T) {
-			//cache := make(map[string]*bip32.PrivateKey)
-
 			for _, chain := range c.Chains {
 				expect := chain.ExtendedPrivateKey
 
-				extKey, err := bip32.GenerateMasterKey(bip32.NewEntropyReader(
+				priv, err := bip32.GenerateMasterKey(bip32.NewEntropyReader(
 					c.Seed), *bip32.MainNetPrivateKey, len(c.Seed)/2)
-				priv := bip32.ExtendedKeyToPrivateKey(extKey)
+				if nil != err {
+					st.Fatal(err)
+				}
 
 				indices, err := chain.Path.ChildIndices()
 				if nil != err {

@@ -11,7 +11,7 @@ import (
 )
 
 func GenerateMasterKey(rand io.Reader, keyID Magic,
-	strength ...int) (*ExtendedKey, error) {
+	strength ...int) (*PrivateKey, error) {
 	seedLen := RecommendedSeedLen
 	if len(strength) > 0 && strength[0] >= MinSeedBytes &&
 		strength[0] <= MaxSeedBytes {
@@ -41,8 +41,10 @@ func GenerateMasterKey(rand io.Reader, keyID Magic,
 	// fingerprint of parent
 	parentFP := []byte{0x00, 0x00, 0x00, 0x00}
 
-	return NewExtendedKey(keyID[:], secretKey, chainCode,
-		parentFP, 0, 0, true), nil
+	//return NewExtendedKey(keyID[:], secretKey, chainCode,
+	//	parentFP, 0, 0, true), nil
+
+	return NewPrivateKey(keyID[:], 0, parentFP, 0, chainCode, secretKey), nil
 }
 
 // NewMaster creates a new master node for use in creating a hierarchical
