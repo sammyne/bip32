@@ -249,7 +249,8 @@ func TestPublicKey_Child_OK2(t *testing.T) {
 				st.Fatal(err)
 			}
 
-			child, err := parent.Child(c.index)
+			//child, err := parent.Child(c.index)
+			child, err := parent.Child(c.ChildIndex.Index)
 			if nil != err {
 				st.Fatal(err)
 			}

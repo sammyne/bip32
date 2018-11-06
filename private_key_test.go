@@ -1,7 +1,6 @@
 package bip32_test
 
 import (
-	"strconv"
 	"testing"
 
 	"github.com/sammy00/base58"
@@ -174,6 +173,7 @@ tests:
 }
 */
 
+/*
 func TestPrivateKey_Child_OK2(t *testing.T) {
 	var testCases, addOn []bip32.Goldie
 	bip32.ReadGoldenJSON(bip32.GoldenName, &testCases)
@@ -235,6 +235,36 @@ func TestPrivateKey_Child_OK2(t *testing.T) {
 				}
 
 				cache[path] = priv
+			}
+		})
+	}
+}
+*/
+
+func TestPrivateKey_Child_OK3(t *testing.T) {
+	testCases := readChildGoldie(t, false)
+
+	for _, c := range testCases {
+		c := c
+
+		t.Run("", func(st *testing.T) {
+			parent, err := bip32.ParsePrivateKey(c.parent)
+			if nil != err {
+				st.Fatal(err)
+			}
+
+			j := c.ChildIndex.Index
+			if c.ChildIndex.Hardened {
+				j = bip32.HardenIndex(j)
+			}
+
+			child, err := parent.Child(j)
+			if nil != err {
+				st.Fatal(err)
+			}
+
+			if got := child.String(); got != c.child {
+				st.Fatalf("invalid child: got %s, expect %s", got, c.child)
 			}
 		})
 	}

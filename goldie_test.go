@@ -9,8 +9,9 @@ import (
 
 type childGoldie struct {
 	parent string
-	index  uint32
-	child  string // the expected child string
+	//index      uint32
+	ChildIndex *bip32.ChildIndex
+	child      string // the expected child string
 }
 
 type generateMasterKeyExpect struct {
@@ -107,7 +108,8 @@ func readChildGoldie(t *testing.T, pub bool) []*childGoldie {
 
 			goldie := &childGoldie{
 				parent: parent,
-				index:  indices[len(indices)-1].Index,
+				//index:  indices[len(indices)-1].Index,
+				ChildIndex: indices[len(indices)-1],
 			}
 
 			if pub {
