@@ -171,6 +171,67 @@ tests:
 	}
 }
 
+func TestPrivateKey_Child_OK2(t *testing.T) {
+	var testCases []bip32.Goldie
+	bip32.ReadGoldenJSON(bip32.GoldenName, &testCases)
+
+	for _, c := range testCases {
+		c := c
+
+		t.Run("", func(st *testing.T) {
+			//cache := make(map[string]*bip32.PrivateKey)
+
+			for _, chain := range c.Chains {
+				expect := chain.ExtendedPrivateKey
+
+				extKey, err := bip32.GenerateMasterKey(bip32.NewEntropyReader(
+					c.Seed), *bip32.MainNetPrivateKey, len(c.Seed)/2)
+				priv := bip32.ExtendedKeyToPrivateKey(extKey)
+
+				indices, err := chain.Path.ChildIndices()
+				if nil != err {
+					st.Fatal(err)
+				}
+
+				for _, index := range indices {
+					j := index.Index
+					if index.Hardened {
+						j = bip32.HardenIndex(j)
+					}
+
+					extKey, err := priv.Child(j)
+					if nil != err {
+						st.Fatal(err)
+					}
+					var ok bool
+					if priv, ok = extKey.(*bip32.PrivateKey); !ok {
+						st.Fatal("coversion failed")
+					}
+				}
+
+				if got := priv.String(); got != expect {
+					st.Fatalf("invalid private key: got %s, expect %s", got, expect)
+				}
+				/*
+					childs, _ := chain.Path.ChildIndices()
+					if 0 == len(childs) {
+						extKey, err := bip32.GenerateMasterKey(bip32.NewEntropyReader(
+							c.Seed), bip32.MainNetPrivateKey, len(c.Seed)/2)
+
+						if nil != err {
+							st.Fatal(err)
+						}
+
+						priv = bip32.ExtendedKeyToPrivateKey(extKey)
+					} else {
+						path := "m"
+					}
+				*/
+			}
+		})
+	}
+}
+
 func TestPrivateKey_Neuter(t *testing.T) {
 	var testCases []bip32.Goldie
 	bip32.ReadGoldenJSON(bip32.GoldenName, &testCases)
