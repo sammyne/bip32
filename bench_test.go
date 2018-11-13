@@ -4,6 +4,7 @@
 
 package bip32_test
 
+/*
 import (
 	"testing"
 
@@ -82,3 +83,4 @@ func BenchmarkSerialize(b *testing.B) {
 		_ = masterKey.String()
 	}
 }
+*/

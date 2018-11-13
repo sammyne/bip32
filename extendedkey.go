@@ -4,6 +4,7 @@
 
 package bip32
 
+/*
 // References:
 //   [BIP32]: BIP0032 - Hierarchical Deterministic Wallets
 //   https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
@@ -449,3 +450,4 @@ func GenerateSeed(length uint8) ([]byte, error) {
 
 	return buf, nil
 }
+*/
