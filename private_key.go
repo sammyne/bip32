@@ -144,7 +144,7 @@ func (priv *PrivateKey) String() string {
 	buf = append(buf, 0x00)
 	buf = paddedAppend(KeyDataLen-1, buf, priv.Data)
 
-	return base58.CheckEncodeX(priv.Version, buf...)
+	return base58.CheckEncodeX(buf, priv.Version...)
 }
 
 func (priv *PrivateKey) ToECPrivate() *btcec.PrivateKey {
