@@ -25,7 +25,7 @@ func (pub *PublicKey) AddressPubKeyHash() []byte {
 }
 
 // Child derive a normal(non-hardened) child for current key
-func (pub *PublicKey) Child(i uint32) (ExtendedKey00, error) {
+func (pub *PublicKey) Child(i uint32) (ExtendedKey, error) {
 	// Prevent derivation of children beyond the max allowed depth.
 	if pub.Level == maxUint8 {
 		return nil, ErrDeriveBeyondMaxDepth

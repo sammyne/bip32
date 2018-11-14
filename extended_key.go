@@ -2,9 +2,9 @@ package bip32
 
 import "github.com/btcsuite/btcd/btcec"
 
-type ExtendedKey00 interface {
+type ExtendedKey interface {
 	AddressPubKeyHash() []byte
-	Child(i uint32) (ExtendedKey00, error)
+	Child(i uint32) (ExtendedKey, error)
 	Depth() uint8
 	Hardened() bool
 	Index() uint32

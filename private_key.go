@@ -24,7 +24,7 @@ func (priv *PrivateKey) AddressPubKeyHash() []byte {
 	return btcutil.Hash160(priv.publicKeyData())
 }
 
-func (priv *PrivateKey) Child(i uint32) (ExtendedKey00, error) {
+func (priv *PrivateKey) Child(i uint32) (ExtendedKey, error) {
 	// Prevent derivation of children beyond the max allowed depth.
 	if priv.Level == maxUint8 {
 		return nil, ErrDeriveBeyondMaxDepth
