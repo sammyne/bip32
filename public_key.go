@@ -149,7 +149,7 @@ func (pub *PublicKey) String() string {
 	str = append(str, pub.Data...)
 
 	//return base58.CheckEncode()
-	return base58.CheckEncodeX(pub.Version, str)
+	return base58.CheckEncodeX(pub.Version, str...)
 }
 
 func NewPublicKey(version []byte, depth uint8, parentFP []byte, index uint32,
