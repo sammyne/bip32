@@ -4,9 +4,6 @@ import (
 	"crypto/hmac"
 	"crypto/sha512"
 	"io"
-	"math/big"
-
-	"github.com/btcsuite/btcd/btcec"
 )
 
 func GenerateMasterKey(rand io.Reader, keyID Magic,
@@ -102,8 +99,7 @@ func newMaster(seed []byte, keyID Magic) (*PrivateKey, error) {
 
 	secretKey, chainCode := I[:len(I)/2], I[len(I)/2:]
 	// Ensure the key in usable.
-	if x := new(big.Int).SetBytes(secretKey); 0 == x.Sign() ||
-		x.Cmp(btcec.S256().N) >= 0 {
+	if !ScalarUsable(secretKey) {
 		return nil, ErrUnusableSeed
 	}
 
