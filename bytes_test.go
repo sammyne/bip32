@@ -26,16 +26,25 @@ func TestReverseCopy(t *testing.T) {
 		ReverseCopy(c.dst, c.src)
 
 		if !bytes.Equal(c.dst, c.expect) {
-			t.Fatalf("#%d failed: got %v, expect %v", i, c.dst, c.expect)
+			t.Fatalf("#%d failed: got %x, expect %x", i, c.dst, c.expect)
 		}
 	}
 }
 
 func TestPaddedAppend(t *testing.T) {
-	dst := make([]byte, 0, 12)
-	src := []byte{0x12, 0x34}
+	testCases := []struct {
+		size     uint
+		dst, src []byte
+		expect   []byte
+	}{
+		{2, nil, []byte{0x12}, []byte{0x00, 0x12}},
+		{1, nil, []byte{0x12}, []byte{0x12}},
+		{0, nil, []byte{0x12}, []byte{0x12}},
+	}
 
-	hello := paddedAppend(3, dst, src)
-	t.Logf("% x", dst)
-	t.Logf("% x", hello)
+	for i, c := range testCases {
+		if got := paddedAppend(c.size, c.dst, c.src); !bytes.Equal(got, c.expect) {
+			t.Fatalf("#%d failed: got %x, expect %x", i, got, c.expect)
+		}
+	}
 }

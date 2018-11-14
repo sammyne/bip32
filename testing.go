@@ -2,10 +2,8 @@ package bip32
 
 import (
 	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"io"
-	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -69,6 +67,7 @@ func NewEntropyReader(hexStr string) io.Reader {
 	return hex.NewDecoder(strings.NewReader(hexStr))
 }
 
+/*
 func ReadGoldenJSON(name string, golden interface{}) error {
 	fd, err := os.Open(filepath.Join(GoldenBase, name))
 	if nil != err {
@@ -78,3 +77,4 @@ func ReadGoldenJSON(name string, golden interface{}) error {
 
 	return json.NewDecoder(fd).Decode(golden)
 }
+*/

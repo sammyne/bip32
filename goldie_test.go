@@ -28,9 +28,7 @@ type generateMasterKeyGoldie struct {
 
 func readInGenerateMasterKeyGoldie(t *testing.T) []*generateMasterKeyGoldie {
 	var golden []bip32.Goldie
-	if err := bip32.ReadGoldenJSON(bip32.GoldenName, &golden); nil != err {
-		t.Fatal(err)
-	}
+	ReadGoldenJSON(t, bip32.GoldenName, &golden)
 
 	var goods []*generateMasterKeyGoldie
 	for _, v := range golden {
@@ -80,13 +78,9 @@ func readChildGoldie(t *testing.T, pub bool) []*childGoldie {
 	var goldens, addOn []*bip32.Goldie
 
 	if !pub {
-		if err := bip32.ReadGoldenJSON(bip32.GoldenName, &goldens); nil != err {
-			t.Fatal(err)
-		}
+		ReadGoldenJSON(t, bip32.GoldenName, &goldens)
 	}
-	if err := bip32.ReadGoldenJSON(bip32.GoldenAddOnName, &addOn); nil != err {
-		t.Fatal(err)
-	}
+	ReadGoldenJSON(t, bip32.GoldenAddOnName, &addOn)
 
 	goldens = append(goldens, addOn...)
 

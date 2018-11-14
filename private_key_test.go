@@ -272,7 +272,7 @@ func TestPrivateKey_Child_OK3(t *testing.T) {
 
 func TestPrivateKey_Neuter(t *testing.T) {
 	var testCases []bip32.Goldie
-	bip32.ReadGoldenJSON(bip32.GoldenName, &testCases)
+	ReadGoldenJSON(t, bip32.GoldenName, &testCases)
 
 	for _, c := range testCases {
 		chains := c.Chains
@@ -302,7 +302,7 @@ func TestPrivateKey_Neuter(t *testing.T) {
 
 func TestParsePrivateKey_OK(t *testing.T) {
 	var testCases []bip32.Goldie
-	bip32.ReadGoldenJSON(bip32.GoldenName, &testCases)
+	ReadGoldenJSON(t, bip32.GoldenName, &testCases)
 
 	for _, c := range testCases {
 		chains := c.Chains

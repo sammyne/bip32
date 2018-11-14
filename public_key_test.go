@@ -57,7 +57,7 @@ func TestParsePublicKey_Bad(t *testing.T) {
 
 func TestParsePublicKey_OK(t *testing.T) {
 	var testCases []bip32.Goldie
-	bip32.ReadGoldenJSON(bip32.GoldenName, &testCases)
+	ReadGoldenJSON(t, bip32.GoldenName, &testCases)
 
 	for _, c := range testCases {
 		chains := c.Chains
