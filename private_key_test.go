@@ -67,29 +67,29 @@ func TestPrivateKey_Child_Error(t *testing.T) {
 func TestPrivateKey_Child_OK(t *testing.T) {
 	testCases := readChildGoldie(t, false)
 
-	for _, c := range testCases {
-		c := c
+	for i, c := range testCases {
+		//c := c
 
-		t.Run("", func(st *testing.T) {
-			parent, err := bip32.ParsePrivateKey(c.parent)
-			if nil != err {
-				st.Fatal(err)
-			}
+		//t.Run("", func(st *testing.T) {
+		parent, err := bip32.ParsePrivateKey(c.parent)
+		if nil != err {
+			t.Fatalf("#%d unexpected error: %v", i, err)
+		}
 
-			j := c.ChildIndex.Index
-			if c.ChildIndex.Hardened {
-				j = bip32.HardenIndex(j)
-			}
+		j := c.ChildIndex.Index
+		if c.ChildIndex.Hardened {
+			j = bip32.HardenIndex(j)
+		}
 
-			child, err := parent.Child(j)
-			if nil != err {
-				st.Fatal(err)
-			}
+		child, err := parent.Child(j)
+		if nil != err {
+			t.Fatalf("#%d unexpected error: %v", i, err)
+		}
 
-			if got := child.String(); got != c.child {
-				st.Fatalf("invalid child: got %s, expect %s", got, c.child)
-			}
-		})
+		if got := child.String(); got != c.child {
+			t.Fatalf("#%d invalid child: got %s, expect %s", i, got, c.child)
+		}
+		//})
 	}
 }
 
@@ -257,12 +257,6 @@ func TestPrivateKey_String(t *testing.T) {
 			t.Fatalf("#%d failed: got %s, expect %s", i, got, c.expect)
 		}
 	}
-}
-
-func TestPrivateKey_ToECPrivate(t *testing.T) {
-	xprv, _ := bip32.ParsePrivateKey("xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi")
-	t.Logf("%#v", xprv.ToECPrivate())
-
 }
 
 func TestParsePrivateKey_OK(t *testing.T) {

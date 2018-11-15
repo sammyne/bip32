@@ -99,7 +99,8 @@ func newMaster(seed []byte, keyID Magic) (*PrivateKey, error) {
 
 	secretKey, chainCode := I[:len(I)/2], I[len(I)/2:]
 	// Ensure the key in usable.
-	if !ScalarUsable(secretKey) {
+	if _, ok := ToUsableScalar(secretKey); !ok {
+		//if !ScalarUsable(secretKey) {
 		return nil, ErrUnusableSeed
 	}
 

@@ -62,7 +62,8 @@ func (pub *PublicKey) Child(i uint32) (ExtendedKey, error) {
 	// chance (< 1 in 2^127) this condition will not hold, and in that case,
 	// a child extended key can't be created for this index and the caller
 	// should simply increment to the next index.
-	if !ScalarUsable(IL) {
+	//if !ScalarUsable(IL) {
+	if _, ok := ToUsableScalar(IL); !ok {
 		return nil, ErrInvalidChild
 	}
 
