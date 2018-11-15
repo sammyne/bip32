@@ -217,3 +217,60 @@ func ExamplePrivateKey_ToECPrivate() {
 	// Y: 27475340966630338619946172401610299714452031745281566289223681642426902078081
 	// D: 105366245268346348601399826821003822098691517983742654654633135381666943167285
 }
+
+// this example demonstrates the derivation of child for public key
+func ExamplePublicKey_walletLayout() {
+	master, _ := bip32.ParsePublicKey(
+		"xpub661MyMwAqRbcFW31YEwpkMuc5THy2PSt5bDMsktWQcFF8syAmRUapSCGu8ED9W6oDMS" +
+			"gv6Zz8idoc4a6mr8BDzTJY47LJhkJ8UB7WEGuduB")
+
+	const format = `
+----
+  path: %s
+  key: %s
+  depth: %d
+  hardened: %v,
+  for main net: %v
+`
+
+	// m
+	fmt.Printf(format, "m", master.String(), master.Depth(),
+		master.Hardened(), master.IsForNet(*bip32.MainNetPublicKey))
+
+	// m/0
+	c0, err := master.Child(0)
+	if nil != err {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf(format, "m/0", c0.String(), c0.Depth(),
+		c0.Hardened(), c0.IsForNet(*bip32.MainNetPublicKey))
+
+	// m/0/2147483647H
+	c0c2147483647H, err := c0.Child(bip32.HardenIndex(2147483647))
+	if nil != err {
+		fmt.Printf("\n----\n%v\n", err)
+		return
+	}
+	fmt.Printf(format, "m/0/2147483647H", c0c2147483647H.String(),
+		c0c2147483647H.Depth(), c0c2147483647H.Hardened(),
+		c0c2147483647H.IsForNet(*bip32.MainNetPublicKey))
+
+	// Output:
+	// ----
+	//   path: m
+	//   key: xpub661MyMwAqRbcFW31YEwpkMuc5THy2PSt5bDMsktWQcFF8syAmRUapSCGu8ED9W6oDMSgv6Zz8idoc4a6mr8BDzTJY47LJhkJ8UB7WEGuduB
+	//   depth: 0
+	//   hardened: false,
+	//   for main net: true
+	//
+	// ----
+	//   path: m/0
+	//   key: xpub69H7F5d8KSRgmmdJg2KhpAK8SR3DjMwAdkxj3ZuxV27CprR9LgpeyGmXUbC6wb7ERfvrnKZjXoUmmDznezpbZb7ap6r1D3tgFxHmwMkQTPH
+	//   depth: 1
+	//   hardened: false,
+	//   for main net: true
+	//
+	// ----
+	// cannot derive a hardened key from a public key
+}

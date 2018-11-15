@@ -2,6 +2,7 @@ package bip32_test
 
 import (
 	"errors"
+	"math"
 	"testing"
 
 	"github.com/sammy00/base58"
@@ -113,152 +114,92 @@ func TestPublicKey_AddressPubKeyHash(t *testing.T) {
 	}
 }
 
-/*
-func TestPublicKey_Child_Ok(t *testing.T) {
-	// The public extended keys for test vectors in [BIP32].
-	testVec1MasterPubKey := "xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8"
-	testVec2MasterPubKey := "xpub661MyMwAqRbcFW31YEwpkMuc5THy2PSt5bDMsktWQcFF8syAmRUapSCGu8ED9W6oDMSgv6Zz8idoc4a6mr8BDzTJY47LJhkJ8UB7WEGuduB"
-
-	tests := []struct {
-		name    string
-		master  string
-		path    []uint32
-		wantPub string
+func TestPublicKey_Child_Error(t *testing.T) {
+	testCases := []struct {
+		pub        *bip32.PublicKey
+		childIndex uint32
+		expect     string // error description
 	}{
-		// Test vector 1
 		{
-			name:    "test vector 1 chain m",
-			master:  testVec1MasterPubKey,
-			path:    []uint32{},
-			wantPub: "xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8",
+			&bip32.PublicKey{Level: math.MaxUint8},
+			0,
+			bip32.ErrDeriveBeyondMaxDepth.Error(),
 		},
 		{
-			name:    "test vector 1 chain m/0",
-			master:  testVec1MasterPubKey,
-			path:    []uint32{0},
-			wantPub: "xpub68Gmy5EVb2BdFbj2LpWrk1M7obNuaPTpT5oh9QCCo5sRfqSHVYWex97WpDZzszdzHzxXDAzPLVSwybe4uPYkSk4G3gnrPqqkV9RyNzAcNJ1",
+			&bip32.PublicKey{Level: 123},
+			bip32.HardenIndex(456),
+			bip32.ErrDeriveHardFromPublic.Error(),
 		},
-		{
-			name:    "test vector 1 chain m/0/1",
-			master:  testVec1MasterPubKey,
-			path:    []uint32{0, 1},
-			wantPub: "xpub6AvUGrnEpfvJBbfx7sQ89Q8hEMPM65UteqEX4yUbUiES2jHfjexmfJoxCGSwFMZiPBaKQT1RiKWrKfuDV4vpgVs4Xn8PpPTR2i79rwHd4Zr",
-		},
-		{
-			name:    "test vector 1 chain m/0/1/2",
-			master:  testVec1MasterPubKey,
-			path:    []uint32{0, 1, 2},
-			wantPub: "xpub6BqyndF6rhZqmgktFCBcapkwubGxPqoAZtQaYewJHXVKZcLdnqBVC8N6f6FSHWUghjuTLeubWyQWfJdk2G3tGgvgj3qngo4vLTnnSjAZckv",
-		},
-		{
-			name:    "test vector 1 chain m/0/1/2/2",
-			master:  testVec1MasterPubKey,
-			path:    []uint32{0, 1, 2, 2},
-			wantPub: "xpub6FHUhLbYYkgFQiFrDiXRfQFXBB2msCxKTsNyAExi6keFxQ8sHfwpogY3p3s1ePSpUqLNYks5T6a3JqpCGszt4kxbyq7tUoFP5c8KWyiDtPp",
-		},
-		{
-			name:    "test vector 1 chain m/0/1/2/2/1000000000",
-			master:  testVec1MasterPubKey,
-			path:    []uint32{0, 1, 2, 2, 1000000000},
-			wantPub: "xpub6GX3zWVgSgPc5tgjE6ogT9nfwSADD3tdsxpzd7jJoJMqSY12Be6VQEFwDCp6wAQoZsH2iq5nNocHEaVDxBcobPrkZCjYW3QUmoDYzMFBDu9",
-		},
-
-		// Test vector 2
-		{
-			name:    "test vector 2 chain m",
-			master:  testVec2MasterPubKey,
-			path:    []uint32{},
-			wantPub: "xpub661MyMwAqRbcFW31YEwpkMuc5THy2PSt5bDMsktWQcFF8syAmRUapSCGu8ED9W6oDMSgv6Zz8idoc4a6mr8BDzTJY47LJhkJ8UB7WEGuduB",
-		},
-		{
-			name:    "test vector 2 chain m/0",
-			master:  testVec2MasterPubKey,
-			path:    []uint32{0},
-			wantPub: "xpub69H7F5d8KSRgmmdJg2KhpAK8SR3DjMwAdkxj3ZuxV27CprR9LgpeyGmXUbC6wb7ERfvrnKZjXoUmmDznezpbZb7ap6r1D3tgFxHmwMkQTPH",
-		},
-		{
-			name:    "test vector 2 chain m/0/2147483647",
-			master:  testVec2MasterPubKey,
-			path:    []uint32{0, 2147483647},
-			wantPub: "xpub6ASAVgeWMg4pmutghzHG3BohahjwNwPmy2DgM6W9wGegtPrvNgjBwuZRD7hSDFhYfunq8vDgwG4ah1gVzZysgp3UsKz7VNjCnSUJJ5T4fdD",
-		},
-		{
-			name:    "test vector 2 chain m/0/2147483647/1",
-			master:  testVec2MasterPubKey,
-			path:    []uint32{0, 2147483647, 1},
-			wantPub: "xpub6CrnV7NzJy4VdgP5niTpqWJiFXMAca6qBm5Hfsry77SQmN1HGYHnjsZSujoHzdxf7ZNK5UVrmDXFPiEW2ecwHGWMFGUxPC9ARipss9rXd4b",
-		},
-		{
-			name:    "test vector 2 chain m/0/2147483647/1/2147483646",
-			master:  testVec2MasterPubKey,
-			path:    []uint32{0, 2147483647, 1, 2147483646},
-			wantPub: "xpub6FL2423qFaWzHCvBndkN9cbkn5cysiUeFq4eb9t9kE88jcmY63tNuLNRzpHPdAM4dUpLhZ7aUm2cJ5zF7KYonf4jAPfRqTMTRBNkQL3Tfta",
-		},
-		{
-			name:    "test vector 2 chain m/0/2147483647/1/2147483646/2",
-			master:  testVec2MasterPubKey,
-			path:    []uint32{0, 2147483647, 1, 2147483646, 2},
-			wantPub: "xpub6H7WkJf547AiSwAbX6xsm8Bmq9M9P1Gjequ5SipsjipWmtXSyp4C3uwzewedGEgAMsDy4jEvNTWtxLyqqHY9C12gaBmgUdk2CGmwachwnWK",
+		{ // invalid public key magic in data part
+			&bip32.PublicKey{
+				ChainCode: []byte{
+					0x87, 0x3d, 0xff, 0x81, 0xc0, 0x2f, 0x52, 0x56,
+					0x23, 0xfd, 0x1f, 0xe5, 0x16, 0x7e, 0xac, 0x3a,
+					0x55, 0xa0, 0x49, 0xde, 0x3d, 0x31, 0x4b, 0xb4,
+					0x2e, 0xe2, 0x27, 0xff, 0xed, 0x37, 0xd5, 0x08,
+				},
+				Data: []byte{
+					0xff, // valid ones should be 0x02 or 0x03
+					0x39, 0xa3, 0x60, 0x13, 0x30, 0x15, 0x97, 0xda,
+					0xef, 0x41, 0xfb, 0xe5, 0x93, 0xa0, 0x2c, 0xc5,
+					0x13, 0xd0, 0xb5, 0x55, 0x27, 0xec, 0x2d, 0xf1,
+					0x05, 0x0e, 0x2e, 0x8f, 0xf4, 0x9c, 0x85, 0xc2,
+				},
+			},
+			123,
+			"invalid magic in compressed pubkey string: 255",
 		},
 	}
 
-tests:
-	for i, test := range tests {
-		var (
-			extKey bip32.ExtendedKey00
-			err    error
-		)
-
-		extKey, err = bip32.ParsePublicKey(test.master)
-		if err != nil {
-			t.Errorf("NewKeyFromString #%d (%s): unexpected error "+
-				"creating extended key: %v", i, test.name,
-				err)
-			continue
-		}
-
-		for _, childNum := range test.path {
-			var err error
-			extKey, err = extKey.Child(childNum)
-			if err != nil {
-				t.Errorf("err: %v", err)
-				continue tests
+	/*
+		xpub, _ := bip32.ParsePublicKey("xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8")
+		for i, v := range xpub.ChainCode {
+			fmt.Printf("0x%02x,", v)
+			if (i+1)%8 == 0 {
+				fmt.Println()
 			}
 		}
+		fmt.Println()
+		for i, v := range xpub.Data {
+			fmt.Printf("0x%02x,", v)
+			if i%8 == 0 {
+				fmt.Println()
+			}
+		}
+		fmt.Println()
+	*/
 
-		pubStr := extKey.String()
-		if pubStr != test.wantPub {
-			t.Errorf("Child #%d (%s): mismatched serialized "+
-				"public extended key -- got: %s, want: %s", i,
-				test.name, pubStr, test.wantPub)
-			continue
+	for i, c := range testCases {
+		_, err := c.pub.Child(c.childIndex)
+
+		var errS string
+		if nil != err {
+			errS = err.Error()
+		}
+
+		if errS != c.expect {
+			t.Fatalf("#%d unexpected error: got %v, expect %v", i, err, c.expect)
 		}
 	}
 }
-*/
 
-func TestPublicKey_Child_OK2(t *testing.T) {
+func TestPublicKey_Child_OK(t *testing.T) {
 	testCases := readChildGoldie(t, true)
 
-	for _, c := range testCases {
-		c := c
+	for i, c := range testCases {
+		parent, err := bip32.ParsePublicKey(c.parent)
+		if nil != err {
+			t.Fatalf("#%d unexpected error: %v", i, err)
+		}
 
-		t.Run("", func(st *testing.T) {
-			parent, err := bip32.ParsePublicKey(c.parent)
-			if nil != err {
-				st.Fatal(err)
-			}
+		child, err := parent.Child(c.ChildIndex.Index)
+		if nil != err {
+			t.Fatal(err)
+		}
 
-			//child, err := parent.Child(c.index)
-			child, err := parent.Child(c.ChildIndex.Index)
-			if nil != err {
-				st.Fatal(err)
-			}
-
-			if got := child.String(); got != c.child {
-				st.Fatalf("invalid child: got %s, expect %s", got, c.child)
-			}
-		})
+		if got := child.String(); got != c.child {
+			t.Fatalf("#%d invalid child: got %s, expect %s", i, got, c.child)
+		}
 	}
 }
 
@@ -268,5 +209,4 @@ func TestPublicKey_String_Zero(t *testing.T) {
 	if got := new(bip32.PublicKey).String(); got != expect {
 		t.Fatalf("invalid string: got %s, expect %s", got, expect)
 	}
-
 }
