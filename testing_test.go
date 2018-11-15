@@ -34,7 +34,7 @@ func TestPath_ChildIndices(t *testing.T) {
 		},
 	}
 
-	for i, c := range testCases[2:] {
+	for i, c := range testCases {
 		got, err := c.path.ChildIndices()
 
 		if nil != err && !c.expect.hasErr {
