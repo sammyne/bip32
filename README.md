@@ -1,18 +1,17 @@
-hdkeychain
+# bip32
+
 ==========
 
-[![CircleCI](https://circleci.com/gh/sammy00/bip32.svg?style=svg)](https://circleci.com/gh/sammy00/bip32) 
-[![codecov](https://codecov.io/gh/sammy00/bip32/branch/master/graph/badge.svg)](https://codecov.io/gh/sammy00/bip32) 
-[![Go Report Card](https://goreportcard.com/badge/github.com/sammy00/bip32)](https://goreportcard.com/report/github.com/sammy00/bip32) 
-[![LICENSE](https://img.shields.io/badge/license-ISC-blue.svg)](LICENSE) 
+[![CircleCI](https://circleci.com/gh/sammy00/bip32.svg?style=svg)](https://circleci.com/gh/sammy00/bip32)
+[![codecov](https://codecov.io/gh/sammy00/bip32/branch/master/graph/badge.svg)](https://codecov.io/gh/sammy00/bip32)
+[![Go Report Card](https://goreportcard.com/badge/github.com/sammy00/bip32)](https://goreportcard.com/report/github.com/sammy00/bip32)
+[![LICENSE](https://img.shields.io/badge/license-ISC-blue.svg)](LICENSE)
 
-Package hdkeychain provides an API for bitcoin hierarchical deterministic
+Package `bip32` provides an API for bitcoin hierarchical deterministic
 extended keys (BIP0032).
 
-A comprehensive suite of tests is provided to ensure proper functionality.  See
-`test_coverage.txt` for the gocov coverage report.  Alternatively, if you are
-running a POSIX OS, you can run the `cov_report.sh` script for a real-time
-report.
+A comprehensive suite of tests is provided to ensure proper functionality. See
+[codecov](https://codecov.io/gh/sammy00/bip32) for the coverage report.
 
 ## Feature Overview
 
@@ -25,7 +24,7 @@ report.
   keys
 - Support for custom networks by registering them with chaincfg
 - Obtaining the underlying EC pubkeys, EC privkeys, and associated bitcoin
-  addresses ties in seamlessly with existing btcec and btcutil types which
+  address public key hashes ties in seamlessly with existing btcec and btcutil types which
   provide powerful tools for working with them to do things like sign
   transations and generate payment scripts
 - Uses the btcec package which is highly optimized for secp256k1
@@ -35,26 +34,21 @@ report.
   - Default HD wallet layout as described by BIP0032
   - Audits use case as described by BIP0032
 - Comprehensive test coverage including the BIP0032 test vectors
-- Benchmarks
+- Benchmarks [WIP]
 
 ## Installation and Updating
 
 ```bash
-$ go get -u github.com/btcsuite/btcutil/hdkeychain
+$ go get -u github.com/sammy00/bip32
 ```
 
 ## Examples
 
-* [NewMaster Example](http://godoc.org/github.com/btcsuite/btcutil/hdkeychain#example-NewMaster)  
+- [NewMaster Example](http://godoc.org/github.com/btcsuite/btcutil/hdkeychain#example-NewMaster)  
   Demonstrates how to generate a cryptographically random seed then use it to
   create a new master node (extended key).
-* [Default Wallet Layout Example](http://godoc.org/github.com/btcsuite/btcutil/hdkeychain#example-package--DefaultWalletLayout)  
+- [Default Wallet Layout Example](http://godoc.org/github.com/btcsuite/btcutil/hdkeychain#example-package--DefaultWalletLayout)  
   Demonstrates the default hierarchical deterministic wallet layout as described
   in BIP0032.
-* [Audits Use Case Example](http://godoc.org/github.com/btcsuite/btcutil/hdkeychain#example-package--Audits)  
+- [Audits Use Case Example](http://godoc.org/github.com/btcsuite/btcutil/hdkeychain#example-package--Audits)  
   Demonstrates the audits use case in BIP0032.
-
-## License
-
-Package hdkeychain is licensed under the [copyfree](http://copyfree.org) ISC
-License.
