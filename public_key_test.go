@@ -1,6 +1,7 @@
 package bip32_test
 
 import (
+	"bytes"
 	"errors"
 	"math"
 	"testing"
@@ -199,6 +200,43 @@ func TestPublicKey_Child_OK(t *testing.T) {
 
 		if got := child.String(); got != c.child {
 			t.Fatalf("#%d invalid child: got %s, expect %s", i, got, c.child)
+		}
+	}
+}
+
+func TestPublicKey_Public(t *testing.T) {
+	var testCases []bip32.Goldie
+	ReadGoldenJSON(t, bip32.GoldenName, &testCases)
+
+	for i, c := range testCases {
+		for j, chain := range c.Chains {
+			xpub, _ := bip32.ParsePublicKey(chain.ExtendedPublicKey)
+			pub, err := xpub.Public()
+			if nil != err {
+				t.Fatalf("#(%d,%d) unexpected error: %v", i, j, err)
+			}
+
+			data := pub.SerializeCompressed()
+			if !bytes.Equal(data, xpub.Data) {
+				t.Fatalf("#(%d,%d) invalid public key data: got %x, expect %x", i, j,
+					data, xpub.Data)
+			}
+		}
+	}
+}
+
+func TestPublicKey_SetNet(t *testing.T) {
+	indices := []bip32.Magic{
+		*bip32.MainNetPublicKey,
+		*bip32.TestNetPublicKey,
+	}
+
+	for i, id := range indices {
+		xpub := new(bip32.PublicKey)
+		xpub.SetNet(id)
+
+		if !bytes.Equal(xpub.Version, id[:]) {
+			t.Fatalf("#%d failed to bind key ID %x", i, id[:])
 		}
 	}
 }
