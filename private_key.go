@@ -5,6 +5,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha512"
 	"encoding/binary"
+	"math"
 	"math/big"
 
 	"github.com/btcsuite/btcutil"
@@ -14,19 +15,22 @@ import (
 	"github.com/sammy00/base58"
 )
 
+// PrivateKey represents an extended private key.
 type PrivateKey struct {
 	PublicKey
 	Data    []byte
 	Version []byte
 }
 
+// AddressPubKeyHash implements ExtendedKey
 func (priv *PrivateKey) AddressPubKeyHash() []byte {
 	return btcutil.Hash160(priv.publicKeyData())
 }
 
+// Child  implements ExtendedKey
 func (priv *PrivateKey) Child(i uint32) (ExtendedKey, error) {
 	// Prevent derivation of children beyond the max allowed depth.
-	if priv.Level == maxUint8 {
+	if priv.Level == math.MaxUint8 {
 		return nil, ErrDeriveBeyondMaxDepth
 	}
 
@@ -84,22 +88,27 @@ func (priv *PrivateKey) Child(i uint32) (ExtendedKey, error) {
 		chainCode, childData), nil
 }
 
+// Depth implements ExtendedKey
 func (priv *PrivateKey) Depth() uint8 {
 	return priv.Level
 }
 
+// Hardened implements ExtendedKey
 func (priv *PrivateKey) Hardened() bool {
-	return priv.ChildIndex >= HardenedKeyStart
+	return priv.PublicKey.Hardened()
 }
 
+// Index implements ExtendedKey
 func (priv *PrivateKey) Index() uint32 {
 	return priv.PublicKey.Index()
 }
 
+// IsForNet implements ExtendedKey
 func (priv *PrivateKey) IsForNet(keyID Magic) bool {
 	return bytes.Equal(priv.Version, keyID[:])
 }
 
+// Neuter implements ExtendedKey
 func (priv *PrivateKey) Neuter() (*PublicKey, error) {
 	// Get the associated public extended key version bytes.
 	version, err := chaincfg.HDPrivateKeyToPublicKeyID(priv.Version)
@@ -107,30 +116,41 @@ func (priv *PrivateKey) Neuter() (*PublicKey, error) {
 		return nil, err
 	}
 
-	pub := priv.PublicKey // copy the common part
+	/*
+		// consider returns the internal public key instead to save allocation
+		pub := priv.PublicKey // copy the common part
 
-	// and update the different parts
-	pub.Version = version
+		// and update the different parts
+		pub.Version = version
 
-	data := priv.publicKeyData()
-	pub.Data = make([]byte, len(data))
-	copy(pub.Data, data)
+		data := priv.publicKeyData()
+		pub.Data = make([]byte, len(data))
+		copy(pub.Data, data)
 
-	return &pub, nil
+		return &pub, nil
+	*/
+	priv.PublicKey.Version = version
+	priv.PublicKey.Data = priv.publicKeyData()
+
+	return &priv.PublicKey, nil
 }
 
+// ParentFingerprint implements ExtendedKey
 func (priv *PrivateKey) ParentFingerprint() uint32 {
 	return priv.PublicKey.ParentFingerprint()
 }
 
+// Public implements ExtendedKey
 func (priv *PrivateKey) Public() (*btcec.PublicKey, error) {
 	return btcec.ParsePubKey(priv.publicKeyData(), secp256k1Curve)
 }
 
+// SetNet implements ExtendedKey
 func (priv *PrivateKey) SetNet(keyID Magic) {
 	priv.Version = keyID[:]
 }
 
+// String implements ExtendedKey
 func (priv *PrivateKey) String() string {
 	if 0 == len(priv.Data) {
 		return "zeroed private key"
@@ -147,12 +167,18 @@ func (priv *PrivateKey) String() string {
 	return base58.CheckEncodeX(buf, priv.Version...)
 }
 
+// ToECPrivate converts the extended key to a btcec private key and returns it.
+// As you might imagine this is only possible if the extended key is a private
+// extended key (as determined by the IsPrivate function).
 func (priv *PrivateKey) ToECPrivate() *btcec.PrivateKey {
 	privKey, _ := btcec.PrivKeyFromBytes(secp256k1Curve, priv.Data)
 
 	return privKey
 }
 
+// publicKeyData load the corresponding public key data in compressed form
+// bound to this private key. It will check whether the data part of the public
+// key is initialised, and initialise it if necessary.
 func (priv *PrivateKey) publicKeyData() []byte {
 	if 0 == len(priv.PublicKey.Data) {
 		x, y := secp256k1Curve.ScalarBaseMult(priv.Data)
@@ -164,15 +190,18 @@ func (priv *PrivateKey) publicKeyData() []byte {
 	return priv.PublicKey.Data
 }
 
+// NewPrivateKey returns a new instance of an extended private key with the
+// given fields. No error checking is performed here as it's only intended to
+// be a convenience method used to create a populated struct. This function
+// should only by used by applications that need to create custom PrivateKey.
+// All other applications should just use NewMasterKey, Child, or Neuter.
 func NewPrivateKey(version []byte, depth uint8, parentFP []byte, index uint32,
 	chainCode, data []byte) *PrivateKey {
 	pub := PublicKey{
-		//Version:    version,
 		Level:      depth,
 		ParentFP:   parentFP,
 		ChildIndex: index,
 		ChainCode:  chainCode,
-		//Data:       data,
 	}
 
 	priv := &PrivateKey{PublicKey: pub, Data: data, Version: version}
@@ -184,6 +213,8 @@ func NewPrivateKey(version []byte, depth uint8, parentFP []byte, index uint32,
 	return priv
 }
 
+// ParsePrivateKey a new extended private key instance out of a base58-encoded
+// extended key.
 func ParsePrivateKey(data58 string) (*PrivateKey, error) {
 	pub, err := decodePublicKey(data58)
 	if nil != err {

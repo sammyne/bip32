@@ -8,8 +8,7 @@ import (
 )
 
 type childGoldie struct {
-	parent string
-	//index      uint32
+	parent     string
 	ChildIndex *bip32.ChildIndex
 	child      string // the expected child string
 }

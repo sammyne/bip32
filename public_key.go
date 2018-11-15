@@ -5,12 +5,14 @@ import (
 	"crypto/hmac"
 	"crypto/sha512"
 	"encoding/binary"
+	"math"
 
 	"github.com/btcsuite/btcd/btcec"
 	"github.com/btcsuite/btcutil"
 	"github.com/sammy00/base58"
 )
 
+// PublicKey is the structure layout for an extended public key.
 type PublicKey struct {
 	ChainCode  []byte
 	ChildIndex uint32 // this is the Index-th child of its parent
@@ -20,6 +22,7 @@ type PublicKey struct {
 	Version    []byte
 }
 
+// AddressPubKeyHash implements ExtendedKey
 func (pub *PublicKey) AddressPubKeyHash() []byte {
 	return btcutil.Hash160(pub.Data)
 }
@@ -27,7 +30,7 @@ func (pub *PublicKey) AddressPubKeyHash() []byte {
 // Child derive a normal(non-hardened) child for current key
 func (pub *PublicKey) Child(i uint32) (ExtendedKey, error) {
 	// Prevent derivation of children beyond the max allowed depth.
-	if pub.Level == maxUint8 {
+	if pub.Level == math.MaxUint8 {
 		return nil, ErrDeriveBeyondMaxDepth
 	}
 
@@ -95,41 +98,48 @@ func (pub *PublicKey) Child(i uint32) (ExtendedKey, error) {
 		childData), nil
 }
 
+// Depth implements ExtendedKey
 func (pub *PublicKey) Depth() uint8 {
 	return pub.Level
 }
 
+// Hardened implements ExtendedKey
 func (pub *PublicKey) Hardened() bool {
 	return pub.ChildIndex >= HardenedKeyStart
 }
 
-/*
-func (pub *PublicKey) HardenedChild(i uint32) (ExtendedKey00, error) {
-	return nil, ErrDeriveHardFromPublic
-}
-*/
-
+// Index implements ExtendedKey
 func (pub *PublicKey) Index() uint32 {
 	return pub.ChildIndex
 }
 
+// IsForNet implements ExtendedKey
 func (pub *PublicKey) IsForNet(keyID Magic) bool {
 	return bytes.Equal(pub.Version, keyID[:])
 }
 
+// Neuter implements ExtendedKey
+func (pub *PublicKey) Neuter() (*PublicKey, error) {
+	return pub, nil
+}
+
+// ParentFingerprint implements ExtendedKey
 func (pub *PublicKey) ParentFingerprint() uint32 {
 	//panic("not implemented")
 	return binary.BigEndian.Uint32(pub.ParentFP)
 }
 
+// Public implements ExtendedKey
 func (pub *PublicKey) Public() (*btcec.PublicKey, error) {
 	return btcec.ParsePubKey(pub.Data, secp256k1Curve)
 }
 
+// SetNet implements ExtendedKey
 func (pub *PublicKey) SetNet(keyID Magic) {
 	pub.Version = keyID[:]
 }
 
+// String implements ExtendedKey
 func (pub *PublicKey) String() string {
 	if 0 == len(pub.Data) {
 		return "zeroed public key"
@@ -153,6 +163,11 @@ func (pub *PublicKey) String() string {
 	return base58.CheckEncodeX(str, pub.Version...)
 }
 
+// NewPublicKey returns a new instance of an extended public key with the
+// given fields. No error checking is performed here as it's only intended to
+// be a convenience method used to create a populated struct. This function
+// should only by used by applications that need to create custom PublicKey.
+// All other applications should just use Child or Neuter.
 func NewPublicKey(version []byte, depth uint8, parentFP []byte, index uint32,
 	chainCode, data []byte) *PublicKey {
 	return &PublicKey{
@@ -165,6 +180,8 @@ func NewPublicKey(version []byte, depth uint8, parentFP []byte, index uint32,
 	}
 }
 
+// ParsePublicKey a new extended public key instance out of a base58-encoded
+// extended key.
 func ParsePublicKey(data58 string) (*PublicKey, error) {
 	decoded, version, err := base58.CheckDecodeX(data58, VersionLen)
 	if nil != err {
