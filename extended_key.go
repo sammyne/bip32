@@ -2,6 +2,10 @@ package bip32
 
 import "github.com/btcsuite/btcd/btcec"
 
+// References:
+//   [BIP32]: BIP0032 - Hierarchical Deterministic Wallets
+//   https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
+
 // ExtendedKey specifies the basic api for a extended private or public key.
 // TODO: add the Zero method manually clears all fields and bytes in the
 // extended key. This can be used to explicitly clear key material from memory
