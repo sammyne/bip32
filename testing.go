@@ -2,7 +2,6 @@ package bip32
 
 import (
 	"encoding/hex"
-	"errors"
 	"io"
 	"path/filepath"
 	"strconv"
@@ -44,9 +43,6 @@ type Path string
 
 func (path Path) ChildIndices() ([]*ChildIndex, error) {
 	indices := strings.Split(string(path), "/")
-	if len(indices) == 0 {
-		return nil, errors.New("empty path isn't allowed")
-	}
 
 	childs := make([]*ChildIndex, len(indices)-1)
 	for i, v := range indices[1:] { // skip the root
@@ -66,15 +62,3 @@ func (path Path) ChildIndices() ([]*ChildIndex, error) {
 func NewEntropyReader(hexStr string) io.Reader {
 	return hex.NewDecoder(strings.NewReader(hexStr))
 }
-
-/*
-func ReadGoldenJSON(name string, golden interface{}) error {
-	fd, err := os.Open(filepath.Join(GoldenBase, name))
-	if nil != err {
-		return err
-	}
-	defer fd.Close()
-
-	return json.NewDecoder(fd).Decode(golden)
-}
-*/
