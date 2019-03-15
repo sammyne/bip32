@@ -45,14 +45,11 @@ $ go get -u github.com/sammyne/bip32
 ## Examples
 
 - [NewMasterKey Example](https://godoc.org/github.com/sammyne/bip32#example-NewMasterKey)
-
   Demonstrates how to generate a cryptographically random seed then use it to
   create a new master node (extended key).
-
 - [Default Wallet Layout Example](https://godoc.org/github.com/sammyne/bip32#example-package--DefaultWalletLayout)  
-  Demonstrates the default hierarchical deterministic wallet layout as described
-  in BIP0032.
-- ~~[Audits Use Case Example](http://godoc.org/github.com/btcsuite/btcutil/hdkeychain#example-package--Audits)~~  
-  ~~Demonstrates the audits use case in BIP0032.~~
+  Demonstrates the default hierarchical deterministic wallet layout as described in BIP0032.
+- [Audits Use Case Example](https://godoc.org/github.com/sammyne/bip32#example-package--Audits)  
+  Demonstrates the audits use case in BIP0032.
 - [Public Key Wallet Layout Example](https://godoc.org/github.com/sammyne/bip32#example-package--DefaultWalletLayout)  
   Demonstrates a simple HD wallet layout
