@@ -4,9 +4,9 @@ github.com/btcsuite/btcutil v0.0.0-20180706230648-ab6388e0c60a h1:RQMUrEILyYJEoA
 github.com/btcsuite/btcutil v0.0.0-20180706230648-ab6388e0c60a/go.mod h1:+5NJ2+qvTyV9exUAL/rxXi3DcLg2Ts+ymUAY5y4NvMg=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/golang/crypto v0.0.0-20181025213731-e84da0312774 h1:XSfzjOw/bKhTXIVkmk6NVuATPu3zFjxWfUnrpvi0iig=
-github.com/golang/crypto v0.0.0-20181025213731-e84da0312774/go.mod h1:uZvAcrsnNaCxlh1HorK5dUQHGmEKPh2H/Rl1kehswPo=
 github.com/golang/crypto v0.0.0-20181030102418-4d3f4d9ffa16 h1:eYYX4kSnlwJkijnThiBqTSx3NiIV1R2K1SkNo7viDi0=
 github.com/golang/crypto v0.0.0-20181030102418-4d3f4d9ffa16/go.mod h1:uZvAcrsnNaCxlh1HorK5dUQHGmEKPh2H/Rl1kehswPo=
-github.com/sammyne/base58 v1.0.0 h1:e1I/oUKG2ncXatK1rVH3/bsy5sIqKLMdatqwr/zpS0Q=
-github.com/sammyne/base58 v1.0.0/go.mod h1:YnqWaWG1fmFImPqhKdfA3UFaFzmW3eP3yX7puS5NmP8=
+github.com/sammyne/base58 v0.0.0-20190315000807-8a6a152ebbfd h1:CIrQanJrtu3n9QsD61gS9Sx+V4BMDhMGWLUeNUJ5Bak=
+github.com/sammyne/base58 v0.0.0-20190315000807-8a6a152ebbfd/go.mod h1:YbSy50lsEu7FpGPi5TTtGNvk2vx2dem4GQQ/hA562Bc=
+github.com/sammyne/base58 v0.1.0 h1:N8dzkyDRjrDthhQk6z01llyyWo0o2RtpaI/84sFkgw8=
+github.com/sammyne/base58 v0.1.0/go.mod h1:YbSy50lsEu7FpGPi5TTtGNvk2vx2dem4GQQ/hA562Bc=
