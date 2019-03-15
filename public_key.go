@@ -16,8 +16,8 @@ import (
 type PublicKey struct {
 	ChainCode  []byte
 	ChildIndex uint32 // this is the Index-th child of its parent
-	Data       []byte
-	Level      uint8 // name so to avoid conflict with method Depth()
+	Data       []byte // the serialized data in the compressed form
+	Level      uint8  // name so to avoid conflict with method Depth()
 	ParentFP   []byte
 	Version    []byte
 }
@@ -60,12 +60,11 @@ func (pub *PublicKey) Child(i uint32) (ExtendedKey, error) {
 	IL, chainCode := I[:len(I)/2], I[len(I)/2:]
 
 	// Both derived public or private keys rely on treating the left 32-byte
-	// sequence calculated above (Il) as a 256-bit integer that must be
+	// sequence calculated above (IL) as a 256-bit integer that must be
 	// within the valid range for a secp256k1 private key.  There is a small
 	// chance (< 1 in 2^127) this condition will not hold, and in that case,
 	// a child extended key can't be created for this index and the caller
 	// should simply increment to the next index.
-	//if !ScalarUsable(IL) {
 	if _, ok := ToUsableScalar(IL); !ok {
 		return nil, ErrInvalidChild
 	}
@@ -152,14 +151,12 @@ func (pub *PublicKey) String() string {
 	//   version (4) || depth (1) || parent fingerprint (4)) ||
 	//   child num (4) || chain code (32) || key data (33)
 	str := make([]byte, 0, KeyLen-VersionLen)
-	//str = append(str, pub.Version...)
 	str = append(str, pub.Level)
 	str = append(str, pub.ParentFP...)
 	str = append(str, childIndex[:]...)
 	str = append(str, pub.ChainCode...)
 	str = append(str, pub.Data...)
 
-	//return base58.CheckEncode()
 	return base58.CheckEncodeX(str, pub.Version...)
 }
 
@@ -199,11 +196,8 @@ func ParsePublicKey(data58 string) (*PublicKey, error) {
 	// where the version has separated from decoded
 
 	// decompose the decoded payload into fields
-	//a, b := 0, VersionLen
-	//pub.Version = decoded[a:b]
 	pub.Version = version
 
-	//a, b = b, b+DepthLen
 	a, b := 0, DepthLen
 	pub.Level = decoded[a:b][0]
 
