@@ -18,15 +18,6 @@ const (
 	// MaxSeedBytes is the maximum number of bytes allowed for a seed to
 	// a master node.
 	MaxSeedBytes = 64 // 512 bits
-
-	// serializedKeyLen is the length of a serialized public or private
-	// extended key.  It consists of 4 bytes version, 1 byte depth, 4 bytes
-	// fingerprint, 4 bytes child number, 32 bytes chain code, and 33 bytes
-	// public/private key data.
-	serializedKeyLen = 4 + 1 + 4 + 4 + 32 + 33 // 78 bytes
-
-	// maxUint8 is the max positive integer which can be serialized in a uint8
-	maxUint8 = 1<<8 - 1
 )
 
 // length constants about fields of key serialization
@@ -37,6 +28,10 @@ const (
 	ChildIndexLen  = 4
 	ChainCodeLen   = 32
 	KeyDataLen     = 33
-	KeyLen         = VersionLen + DepthLen + FingerprintLen +
+	// KeyLen is the length of a serialized public or private
+	// extended key.  It consists of 4 bytes version, 1 byte depth, 4 bytes
+	// fingerprint, 4 bytes child number, 32 bytes chain code, and 33 bytes
+	// public/private key data.
+	KeyLen = VersionLen + DepthLen + FingerprintLen +
 		ChildIndexLen + ChainCodeLen + KeyDataLen
 )

@@ -3,44 +3,47 @@ package bip32
 import (
 	"encoding/hex"
 	"io"
-	"path/filepath"
 	"strconv"
 	"strings"
 )
 
+// This file specify some utility structure to ease testing.
+
 //go:generate go run golden.go
 
+// GoldenBase base directory storing the golden files
 const GoldenBase = "testdata"
+
+// GoldenName specifies the file containing the reference test vectors
 const GoldenName = "bip32.golden"
+
+// GoldenAddOnName specifies the file containing the more test vectors
+// from the btcutil/hdkeychain testing
 const GoldenAddOnName = "bip32_addon.golden"
 
-var GoldenPath = filepath.Join(GoldenBase, GoldenName)
-
-var Seeds = []string{
-	"000102030405060708090a0b0c0d0e0f",
-	"fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542",
-	"4b381541583be4423346c643850da4b320e46a87ae3d2a4e6da11eba819cd4acba45d239319ac14f863b8d5ab5a0d0c64d2e8a1e7d1457df2e5a3c51c73235be",
-}
-
+// ChainGoldie is the structure for key chains
 type ChainGoldie struct {
 	Path               Path // child stemming from master node
 	ExtendedPublicKey  string
 	ExtendedPrivateKey string
 }
 
+// ChildIndex is enhanced index capable of telling whether its hardened.
 type ChildIndex struct {
 	Index    uint32
 	Hardened bool
 }
 
+// Goldie is the structure of a single test vector.
 type Goldie struct {
 	Seed   string
 	Chains []ChainGoldie
 }
 
-//type Path []ChildIndex
+// Path alias string with a path decoding api
 type Path string
 
+// ChildIndices return the child indices tree along this path
 func (path Path) ChildIndices() ([]*ChildIndex, error) {
 	indices := strings.Split(string(path), "/")
 
@@ -59,6 +62,7 @@ func (path Path) ChildIndices() ([]*ChildIndex, error) {
 	return childs, nil
 }
 
+// NewEntropyReader constructs hex decoder for testing.
 func NewEntropyReader(hexStr string) io.Reader {
 	return hex.NewDecoder(strings.NewReader(hexStr))
 }

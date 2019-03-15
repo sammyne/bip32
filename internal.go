@@ -7,6 +7,9 @@ import (
 	"github.com/sammyne/base58"
 )
 
+// appendMeta serialize the meta part of the given public key
+// into bytes sequence and then append them to the buf, the address
+// of which will be return.
 func appendMeta(buf []byte, pub *PublicKey) []byte {
 	var childIndex [ChildIndexLen]byte
 	binary.BigEndian.PutUint32(childIndex[:], pub.ChildIndex)
@@ -69,6 +72,8 @@ func decodePublicKey(data58 string) (*PublicKey, error) {
 	return pub, nil
 }
 
+// derivePublicKey calculates the public key corresponding to the input
+// private key, and output the public key data in compressed form.
 func derivePublicKey(priv []byte) []byte {
 	// load the public key data eagerly
 	x, y := secp256k1Curve.ScalarBaseMult(priv)

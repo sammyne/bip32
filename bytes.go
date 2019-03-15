@@ -1,5 +1,6 @@
 package bip32
 
+// ReverseCopy works in the opposite direction as the built-in copy()
 func ReverseCopy(dst, src []byte) {
 	for i, j := len(dst)-1, len(src)-1; i >= 0 && j >= 0; i, j = i-1, j-1 {
 		dst[i] = src[j]

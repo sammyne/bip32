@@ -1,4 +1,6 @@
 // +build ignore
+// Package main is a utility to format the test vectors provided in
+// the btcutil/hdkeychain implementation into the golden file for testing.
 
 package main
 

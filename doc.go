@@ -1,3 +1,4 @@
+// Copyright (c) 2018 sammy00
 // Copyright (c) 2014 The btcsuite developers
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
@@ -12,29 +13,30 @@ The ability to implement hierarchical deterministic wallets depends on the
 ability to create and derive hierarchical deterministic extended keys.
 
 At a high level, this package provides support for those hierarchical
-deterministic extended keys by providing an ExtendedKey type and supporting
-functions.  Each extended key can either be a private or public extended key
-which itself is capable of deriving a child extended key.
+deterministic extended keys specified as the ExtendedKey interface, which is
+implemented by PrivateKey and PublicKey.Therefore, each extended key can either
+be a private or public extended key which itself is capable of deriving a child
+extended key.
 
 Determining the Extended Key Type
 
-Whether an extended key is a private or public extended key can be determined
-with the IsPrivate function.
+Whether an extended key is a private or public extended key can be type assertion against the PrivateKey type.
 
 Transaction Signing Keys and Payment Addresses
 
 In order to create and sign transactions, or provide others with addresses to
 send funds to, the underlying key and address material must be accessible.  This
-package provides the ECPubKey, ECPrivKey, and Address functions for this
-purpose.
+package provides the ECPubKey, ECPrivKey, and AddressPubKeyHash functions for
+this purpose.
 
 The Master Node
 
 As previously mentioned, the extended keys are hierarchical meaning they are
 used to form a tree.  The root of that tree is called the master node and this
-package provides the NewMaster function to create it from a cryptographically
-random seed.  The GenerateSeed function is provided as a convenient way to
-create a random seed for use with the NewMaster function.
+package provides the NewMasterKey function to create it from a cryptographically
+random seed.  The GenerateMasterKey function is provided as a convenient way to
+create a random extended private key for use where the seed would be read from
+the provided rand entropy reader.
 
 Deriving Children
 
@@ -42,9 +44,10 @@ Once you have created a tree root (or have deserialized an extended key as
 discussed later), the child extended keys can be derived by using the Child
 function.  The Child function supports deriving both normal (non-hardened) and
 hardened child extended keys.  In order to derive a hardened extended key, use
-the HardenedKeyStart constant + the hardened key number as the index to the
-Child function.  This provides the ability to cascade the keys into a tree and
-hence generate the hierarchical deterministic key chains.
+the mapping function HardenIndex(i) to get the corresponding index for
+generating harden child to the Child function.  This provides the ability to
+cascade the keys into a tree and hence generate the hierarchical deterministic
+key chains.
 
 Normal vs Hardened Child Extended Keys
 
@@ -69,8 +72,8 @@ public extended keys.
 Serializing and Deserializing Extended Keys
 
 Extended keys are serialized and deserialized with the String and
-NewKeyFromString functions.  The serialized key is a Base58-encoded string which
-looks like the following:
+ParsePrivateKey/ParsePublicKey functions. The serialized key is a
+Base58-encoded string which looks like the following:
 	public key:   xpub68Gmy5EdvgibQVfPdqkBBCHxA5htiqg55crXYuXoQRKfDBFA1WEjWgP6LHhwBZeNK1VTsfTFUHCdrfp1bgwQ9xv5ski8PX9rL2dZXvgGDnw
 	private key:  xprv9uHRZZhk6KAJC1avXpDAp4MDc3sQKNxDiPvvkX8Br5ngLNv1TxvUxt4cV1rGL5hj6KCesnDYUhd7oWgT11eZG7XnxHrnYeSvkzY7d2bhkJ7
 

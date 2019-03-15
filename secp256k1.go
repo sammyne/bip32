@@ -8,6 +8,8 @@ import (
 
 var secp256k1Curve = btcec.S256()
 
+// ToUsableScalar tries to covert k to a scalar 0<s<secp256k1Curve.N as a big
+// integer, and returns false in case of failure.
 func ToUsableScalar(k []byte) (*big.Int, bool) {
 	x := new(big.Int).SetBytes(k)
 

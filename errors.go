@@ -16,11 +16,6 @@ var (
 	ErrDeriveBeyondMaxDepth = errors.New("cannot derive a key with more than " +
 		"255 indices in its path")
 
-	// ErrNotPrivExtKey describes an error in which the caller attempted
-	// to extract a private key from a public extended key.
-	ErrNotPrivExtKey = errors.New("unable to create private keys from a " +
-		"public extended key")
-
 	// ErrInvalidChild describes an error in which the child at a specific
 	// index is invalid due to the derived key falling outside of the valid
 	// range for secp256k1 private keys.  This error indicates the caller
@@ -48,5 +43,6 @@ var (
 	ErrInvalidKeyLen = errors.New("the provided serialized extended key " +
 		"length is invalid")
 
+	// ErrNoEnoughEntropy signals more entropy is needed
 	ErrNoEnoughEntropy = errors.New("more entropy is needed")
 )

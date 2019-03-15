@@ -204,6 +204,19 @@ func TestPublicKey_Child_OK(t *testing.T) {
 	}
 }
 
+func TestPublicKey_Neuter(t *testing.T) {
+	xpub := new(bip32.PublicKey)
+
+	got, err := xpub.Neuter()
+	if nil != err {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if got != xpub {
+		t.Fatalf("neutering of public key itself should return itself")
+	}
+}
+
 func TestPublicKey_Public(t *testing.T) {
 	var testCases []bip32.Goldie
 	ReadGoldenJSON(t, bip32.GoldenName, &testCases)

@@ -1,4 +1,7 @@
 // +build ignore
+// Package main is a utility to format the test vectors provided in
+// https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#test-vectors
+// into the golden file for testing.
 
 package main
 
