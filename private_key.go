@@ -15,7 +15,7 @@ import (
 	"github.com/sammyne/base58"
 )
 
-// PrivateKey represents an extended private key.
+// PrivateKey houses all the information of an extended private key.
 type PrivateKey struct {
 	PublicKey
 	Data    []byte
@@ -27,7 +27,7 @@ func (priv *PrivateKey) AddressPubKeyHash() []byte {
 	return btcutil.Hash160(priv.publicKeyData())
 }
 
-// Child  implements ExtendedKey
+// Child implements ExtendedKey
 func (priv *PrivateKey) Child(i uint32) (ExtendedKey, error) {
 	// Prevent derivation of children beyond the max allowed depth.
 	if priv.Level == math.MaxUint8 {
@@ -44,7 +44,7 @@ func (priv *PrivateKey) Child(i uint32) (ExtendedKey, error) {
 	data := make([]byte, KeyDataLen+ChildIndexLen)
 	if i < HardenedKeyStart { // normal
 		copy(data, priv.publicKeyData())
-	} else { // harden
+	} else { // harden, where 0x00 prefix plus 32-byte data
 		data[0] = 0x00
 		ReverseCopy(data[1:KeyDataLen], priv.Data)
 	}
@@ -60,7 +60,7 @@ func (priv *PrivateKey) Child(i uint32) (ExtendedKey, error) {
 	IL, chainCode := I[:len(I)/2], I[len(I)/2:]
 
 	// Both derived public or private keys rely on treating the left 32-byte
-	// sequence calculated above (Il) as a 256-bit integer that must be
+	// sequence calculated above (IL) as a 256-bit integer that must be
 	// within the valid range for a secp256k1 private key.  There is a small
 	// chance (< 1 in 2^127) this condition will not hold, and in that case,
 	// a child extended key can't be created for this index and the caller
@@ -74,7 +74,7 @@ func (priv *PrivateKey) Child(i uint32) (ExtendedKey, error) {
 	// Add the parent private key to the intermediate private key to
 	// derive the final child key.
 	//
-	// childKey = parse256(Il) + parenKey
+	// childKey = parse256(IL) + parenKey
 	k := new(big.Int).SetBytes(priv.Data)
 	z.Add(z, k)
 	z.Mod(z, secp256k1Curve.N)
@@ -86,21 +86,6 @@ func (priv *PrivateKey) Child(i uint32) (ExtendedKey, error) {
 
 	return NewPrivateKey(priv.Version, priv.Level+1, parentFP, i,
 		chainCode, childData), nil
-}
-
-// Depth implements ExtendedKey
-func (priv *PrivateKey) Depth() uint8 {
-	return priv.Level
-}
-
-// Hardened implements ExtendedKey
-func (priv *PrivateKey) Hardened() bool {
-	return priv.PublicKey.Hardened()
-}
-
-// Index implements ExtendedKey
-func (priv *PrivateKey) Index() uint32 {
-	return priv.PublicKey.Index()
 }
 
 // IsForNet implements ExtendedKey
@@ -135,11 +120,6 @@ func (priv *PrivateKey) Neuter() (*PublicKey, error) {
 	return &priv.PublicKey, nil
 }
 
-// ParentFingerprint implements ExtendedKey
-func (priv *PrivateKey) ParentFingerprint() uint32 {
-	return priv.PublicKey.ParentFingerprint()
-}
-
 // Public implements ExtendedKey
 func (priv *PrivateKey) Public() (*btcec.PublicKey, error) {
 	return btcec.ParsePubKey(priv.publicKeyData(), secp256k1Curve)
@@ -169,7 +149,7 @@ func (priv *PrivateKey) String() string {
 
 // ToECPrivate converts the extended key to a btcec private key and returns it.
 // As you might imagine this is only possible if the extended key is a private
-// extended key (as determined by the IsPrivate function).
+// extended key.
 func (priv *PrivateKey) ToECPrivate() *btcec.PrivateKey {
 	privKey, _ := btcec.PrivKeyFromBytes(secp256k1Curve, priv.Data)
 
@@ -216,6 +196,7 @@ func NewPrivateKey(version []byte, depth uint8, parentFP []byte, index uint32,
 // ParsePrivateKey a new extended private key instance out of a base58-encoded
 // extended key.
 func ParsePrivateKey(data58 string) (*PrivateKey, error) {
+	// decodePublicKey is applicable here too !!!
 	pub, err := decodePublicKey(data58)
 	if nil != err {
 		return nil, err
@@ -223,7 +204,7 @@ func ParsePrivateKey(data58 string) (*PrivateKey, error) {
 
 	priv := &PrivateKey{
 		PublicKey: *pub,
-		Data:      pub.Data[1:],
+		Data:      pub.Data[1:], // simply trims out the 0x00 prefix
 	}
 	priv.Version = priv.PublicKey.Version
 	priv.PublicKey.Data, priv.PublicKey.Version = nil, nil

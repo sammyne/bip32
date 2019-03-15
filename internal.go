@@ -32,7 +32,6 @@ func appendMeta(buf []byte, pub *PublicKey) []byte {
 // key string.
 // Note: the decoded key goes through format check only, no on-curve check
 func decodePublicKey(data58 string) (*PublicKey, error) {
-	//version, decoded, err := base58.CheckDecodeX(data58, VersionLen)
 	decoded, version, err := base58.CheckDecodeX(data58, VersionLen)
 	if nil != err {
 		return nil, err
@@ -49,11 +48,8 @@ func decodePublicKey(data58 string) (*PublicKey, error) {
 	// where the version has separated from decoded
 
 	// decompose the decoded payload into fields
-	//a, b := 0, VersionLen
-	//pub.Version = decoded[a:b]
 	pub.Version = version
 
-	//a, b = b, b+DepthLen
 	a, b := 0, DepthLen
 	pub.Level = decoded[a:b][0]
 

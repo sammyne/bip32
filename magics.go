@@ -7,7 +7,7 @@ const MagicLen = 4
 // Magic represents the buffer to hold the magic bytes.
 type Magic [MagicLen]byte
 
-// magic bytes as version prefix for serialization, and their application goes
+// magic bytes as version prefix for base58 encoding, and their application goes
 // as named.
 var (
 	MainNetPrivateKey = &Magic{0x04, 0x88, 0xad, 0xe4} // starts with xprv

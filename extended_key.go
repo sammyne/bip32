@@ -17,9 +17,9 @@ type ExtendedKey interface {
 	// bound to it for private keys
 	AddressPubKeyHash() []byte
 	// Child returns a derived child extended key at the given index.  When this
-	// extended key is a private extended key (as determined by the IsPrivate
-	// function), a private extended key will be derived.  Otherwise, the derived
-	// extended key will be also be a public extended key.
+	// extended key is a private extended key, a private extended key will be
+	// derived.  Otherwise, the derived extended key will be also be a public
+	// extended key.
 	//
 	// When the index is greater to or equal than the HardenedKeyStart constant,
 	// the derived extended key will be a hardened extended key.  It is only
@@ -62,6 +62,9 @@ type ExtendedKey interface {
 	Neuter() (*PublicKey, error)
 	// ParentFingerprint returns a fingerprint of the parent extended key from
 	// which this one was derived.
+	//
+	// It's defined the be the first 32 bits of the key identifier as specified by
+	// https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#key-identifiers
 	ParentFingerprint() uint32
 	// Public converts the extended key to a btcec public key and returns it.
 	Public() (*btcec.PublicKey, error)
