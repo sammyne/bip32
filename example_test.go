@@ -55,7 +55,7 @@ func Example_defaultWalletLayout() {
 	//     number i of the HDW derived from master m.
 
 	// Ordinarily this would either be read from some encrypted source
-	// and be decrypted or generated as the NewMaster example shows, but
+	// and be decrypted or generated as the NewMasterKey example shows, but
 	// for the purposes of this example, the private extended key for the
 	// master node is being hard coded here.
 	// This is a base58-check encoded private key
@@ -65,7 +65,6 @@ func Example_defaultWalletLayout() {
 	// Start by getting an extended key instance for the master node.
 	// This gives the path:
 	//   m
-	//masterKey, err := hdkeychain.NewKeyFromString(master)
 	masterKey, err := bip32.ParsePrivateKey(master58)
 	if err != nil {
 		fmt.Println(err)
@@ -110,7 +109,7 @@ func Example_defaultWalletLayout() {
 		return
 	}
 
-	// Derive the 1st extended key for the account 0 internal chain.  This
+	// Derive the 0th extended key for the account 0 internal chain.  This
 	// gives the path:
 	//   m/0H/1/0
 	acct0Int0, err := acct0Int.Child(0)
@@ -133,8 +132,6 @@ Account %d %s Address %d
   - for main net: %v
 `
 
-	//fmt.Println("Account 0 External Address 10:", acct0ExtAddr)
-	//fmt.Println("Account 0 Internal Address 0:", acct0IntAddr)
 	fmt.Printf(format, 0, "External", acct0Ext10.Index(), acct0ExtAddr,
 		acct0Ext10.Depth(), acct0Ext10.Hardened(),
 		acct0Ext10.IsForNet(*bip32.MainNetPrivateKey))
@@ -156,7 +153,6 @@ Account %d %s Address %d
 	//   - for main net: true
 }
 
-/*
 // This example demonstrates the audits use case in BIP0032.
 func Example_audits() {
 	// The audits use case described in BIP0032 is:
@@ -171,7 +167,7 @@ func Example_audits() {
 	//   the master public extended key)
 
 	// Ordinarily this would either be read from some encrypted source
-	// and be decrypted or generated as the NewMaster example shows, but
+	// and be decrypted or generated as the NewMasterKey example shows, but
 	// for the purposes of this example, the private extended key for the
 	// master node is being hard coded here.
 	master := "xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jP" +
@@ -180,7 +176,7 @@ func Example_audits() {
 	// Start by getting an extended key instance for the master node.
 	// This gives the path:
 	//   m
-	masterKey, err := hdkeychain.NewKeyFromString(master)
+	masterKey, err := bip32.ParsePrivateKey(master)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -201,7 +197,6 @@ func Example_audits() {
 	// Output:
 	// Audit key N(m/*): xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8
 }
-*/
 
 func ExamplePrivateKey_ToECPrivate() {
 	xprv, _ := bip32.ParsePrivateKey("xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi")
