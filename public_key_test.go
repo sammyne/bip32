@@ -261,3 +261,41 @@ func TestPublicKey_String_Zero(t *testing.T) {
 		t.Fatalf("invalid string: got %s, expect %s", got, expect)
 	}
 }
+
+func TestPublicKey_Zero(t *testing.T) {
+	var testCases []bip32.Goldie
+	ReadGoldenJSON(t, bip32.GoldenName, &testCases)
+
+	isZero := func(data []byte) bool {
+		for _, v := range data {
+			if 0 != v {
+				return false
+			}
+		}
+
+		return true
+	}
+
+	isZeroPK := func(xpub *bip32.PublicKey) bool {
+		return nil == xpub || (isZero(xpub.ChainCode) && 0 == xpub.ChildIndex &&
+			isZero(xpub.Data) && 0 == xpub.Level && isZero(xpub.ParentFP) &&
+			isZero(xpub.Version))
+	}
+
+	for i, c := range testCases {
+		for j, chain := range c.Chains {
+			xpub, _ := bip32.ParsePublicKey(chain.ExtendedPublicKey)
+			xpub.Zero()
+			if !isZeroPK(xpub) {
+				t.Fatalf("#(%d,%d): public key %s isn't zeroed fully", i, j,
+					chain.ExtendedPublicKey)
+			}
+		}
+	}
+
+	var xpub *bip32.PublicKey
+	xpub.Zero()
+	if !isZeroPK(xpub) {
+		t.Fatal("nil public key should remains zero")
+	}
+}

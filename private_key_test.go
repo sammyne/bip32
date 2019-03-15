@@ -306,3 +306,61 @@ func TestParsePrivateKey_Error(t *testing.T) {
 		}
 	}
 }
+
+func TestPrivateKey_Zero(t *testing.T) {
+	var testCases []bip32.Goldie
+	ReadGoldenJSON(t, bip32.GoldenName, &testCases)
+
+	isZero := func(data []byte) bool {
+		for _, v := range data {
+			if 0 != v {
+				return false
+			}
+		}
+
+		return true
+	}
+
+	isZeroKey := func(xpriv *bip32.PrivateKey) bool {
+		if nil == xpriv {
+			return true
+		}
+
+		xpub := xpriv.PublicKey
+		return isZero(xpriv.Data) && isZero(xpriv.Version) &&
+			isZero(xpub.ChainCode) && 0 == xpub.ChildIndex && isZero(xpub.Data) &&
+			0 == xpub.Level && isZero(xpub.ParentFP) && isZero(xpub.Version)
+	}
+
+	for _, c := range testCases {
+		chains := c.Chains
+
+		t.Run("", func(st *testing.T) {
+			for _, chain := range chains {
+				xpriv, err := bip32.ParsePrivateKey(chain.ExtendedPrivateKey)
+				if nil != err {
+					st.Fatalf("unexpected error: %v", err)
+				}
+
+				if isZeroKey(xpriv) {
+					st.Fatalf("private key %s shouldn't be zeroed",
+						chain.ExtendedPrivateKey)
+				}
+
+				xpriv.Zero()
+
+				if !isZeroKey(xpriv) {
+					st.Fatalf("private key %s should have been zeroed",
+						chain.ExtendedPrivateKey)
+				}
+			}
+		})
+	}
+
+	// edge case as nil private key
+	var xpriv *bip32.PrivateKey
+	xpriv.Zero()
+	if !isZeroKey(xpriv) {
+		t.Fatal("nil private key should be treated as zeroed already")
+	}
+}

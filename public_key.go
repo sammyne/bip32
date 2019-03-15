@@ -160,6 +160,20 @@ func (pub *PublicKey) String() string {
 	return base58.CheckEncodeX(str, pub.Version...)
 }
 
+// Zero implements ExtendedKey
+func (pub *PublicKey) Zero() {
+	if nil == pub {
+		return
+	}
+
+	Zero(pub.ChainCode)
+	pub.ChildIndex = 0
+	Zero(pub.Data)
+	pub.Level = 0
+	Zero(pub.ParentFP)
+	Zero(pub.Version)
+}
+
 // NewPublicKey returns a new instance of an extended public key with the
 // given fields. No error checking is performed here as it's only intended to
 // be a convenience method used to create a populated struct. This function

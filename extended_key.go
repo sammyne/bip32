@@ -7,10 +7,6 @@ import "github.com/btcsuite/btcd/btcec"
 //   https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
 
 // ExtendedKey specifies the basic api for a extended private or public key.
-// TODO: add the Zero method manually clears all fields and bytes in the
-// extended key. This can be used to explicitly clear key material from memory
-// for enhanced security against memory scraping. This function only clears
-// this particular key and not any children that have already been derived.
 type ExtendedKey interface {
 	// AddressPubKeyHash returns the public key hash (20 bytes) derived from the
 	// key, which would be itself for public keys and the extended public key
@@ -73,4 +69,10 @@ type ExtendedKey interface {
 	SetNet(keyID Magic)
 	// String returns the extended key as a human-readable base58-encoded string.
 	String() string
+
+	// Zero manually clears all fields and bytes in the
+	// extended key. This can be used to explicitly clear key material from memory
+	// for enhanced security against memory scraping. This function only clears
+	// this particular key and not any children that have already been derived.
+	Zero()
 }

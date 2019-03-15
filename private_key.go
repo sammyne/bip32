@@ -156,6 +156,17 @@ func (priv *PrivateKey) ToECPrivate() *btcec.PrivateKey {
 	return privKey
 }
 
+// Zero implements ExtendedKey
+func (priv *PrivateKey) Zero() {
+	if nil == priv {
+		return
+	}
+
+	priv.PublicKey.Zero()
+	Zero(priv.Data)
+	Zero(priv.Version)
+}
+
 // publicKeyData load the corresponding public key data in compressed form
 // bound to this private key. It will check whether the data part of the public
 // key is initialised, and initialise it if necessary.
