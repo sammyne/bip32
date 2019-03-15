@@ -1,14 +1,14 @@
+// Copyright (c) 2018-2019 sammyne
 // Copyright (c) 2014 The btcsuite developers
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
 package bip32_test
 
-/*
 import (
 	"testing"
 
-	"github.com/btcsuite/btcutil/hdkeychain"
+	"github.com/sammyne/bip32"
 )
 
 // bip0032MasterPriv1 is the master private extended key from the first set of
@@ -20,22 +20,23 @@ const bip0032MasterPriv1 = "xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbP" +
 // child from a master private extended key.
 func BenchmarkDeriveHardened(b *testing.B) {
 	b.StopTimer()
-	masterKey, err := hdkeychain.NewKeyFromString(bip0032MasterPriv1)
+	masterKey, err := bip32.ParsePrivateKey(bip0032MasterPriv1)
 	if err != nil {
 		b.Errorf("Failed to decode master seed: %v", err)
 	}
 	b.StartTimer()
 
 	for i := 0; i < b.N; i++ {
-		masterKey.Child(hdkeychain.HardenedKeyStart)
+		masterKey.Child(bip32.HardenedKeyStart)
 	}
 }
 
-// BenchmarkDeriveNormal benchmarks how long it takes to derive a normal
+// BenchmarkDeriveNonhardened benchmarks how long it takes to derive a normal
 // (non-hardened) child from a master private extended key.
-func BenchmarkDeriveNormal(b *testing.B) {
+func BenchmarkDeriveNonhardened(b *testing.B) {
 	b.StopTimer()
-	masterKey, err := hdkeychain.NewKeyFromString(bip0032MasterPriv1)
+	//masterKey, err := hdkeychain.NewKeyFromString(bip0032MasterPriv1)
+	masterKey, err := bip32.ParsePrivateKey(bip0032MasterPriv1)
 	if err != nil {
 		b.Errorf("Failed to decode master seed: %v", err)
 	}
@@ -46,11 +47,11 @@ func BenchmarkDeriveNormal(b *testing.B) {
 	}
 }
 
-// BenchmarkPrivToPub benchmarks how long it takes to convert a private extended
-// key to a public extended key.
-func BenchmarkPrivToPub(b *testing.B) {
+// BenchmarkPrivateKey_Public benchmarks how long it takes to convert a private
+// extended key to a public extended key.
+func BenchmarkPrivateKey_Public(b *testing.B) {
 	b.StopTimer()
-	masterKey, err := hdkeychain.NewKeyFromString(bip0032MasterPriv1)
+	masterKey, err := bip32.ParsePrivateKey(bip0032MasterPriv1)
 	if err != nil {
 		b.Errorf("Failed to decode master seed: %v", err)
 	}
@@ -58,22 +59,24 @@ func BenchmarkPrivToPub(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		masterKey.Neuter()
+		// invalid the cached public key
+		masterKey.PublicKey.Data = nil
 	}
 }
 
-// BenchmarkDeserialize benchmarks how long it takes to deserialize a private
-// extended key.
-func BenchmarkDeserialize(b *testing.B) {
+// BenchmarkParsePrivateKey benchmarks how long it takes to deserialize a
+// private extended key.
+func BenchmarkParsePrivateKey(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		hdkeychain.NewKeyFromString(bip0032MasterPriv1)
+		bip32.ParsePrivateKey(bip0032MasterPriv1)
 	}
 }
 
-// BenchmarkSerialize benchmarks how long it takes to serialize a private
-// extended key.
-func BenchmarkSerialize(b *testing.B) {
+// BenchmarkPrivateKey_String benchmarks how long it takes to serialize a
+// private extended key.
+func BenchmarkPrivateKey_String(b *testing.B) {
 	b.StopTimer()
-	masterKey, err := hdkeychain.NewKeyFromString(bip0032MasterPriv1)
+	masterKey, err := bip32.ParsePrivateKey(bip0032MasterPriv1)
 	if err != nil {
 		b.Errorf("Failed to decode master seed: %v", err)
 	}
@@ -83,4 +86,3 @@ func BenchmarkSerialize(b *testing.B) {
 		_ = masterKey.String()
 	}
 }
-*/

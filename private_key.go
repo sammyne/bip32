@@ -175,6 +175,7 @@ func (priv *PrivateKey) publicKeyData() []byte {
 // be a convenience method used to create a populated struct. This function
 // should only by used by applications that need to create custom PrivateKey.
 // All other applications should just use NewMasterKey, Child, or Neuter.
+// **The public key part is left uninitialized yet**
 func NewPrivateKey(version []byte, depth uint8, parentFP []byte, index uint32,
 	chainCode, data []byte) *PrivateKey {
 	pub := PublicKey{
@@ -195,6 +196,7 @@ func NewPrivateKey(version []byte, depth uint8, parentFP []byte, index uint32,
 
 // ParsePrivateKey a new extended private key instance out of a base58-encoded
 // extended key.
+// **The public key part is left uninitialized yet**
 func ParsePrivateKey(data58 string) (*PrivateKey, error) {
 	// decodePublicKey is applicable here too !!!
 	pub, err := decodePublicKey(data58)
