@@ -10,7 +10,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/sammy00/bip32"
+	"github.com/sammyne/bip32"
 )
 
 // Goldie is an alias to ease typing

@@ -4,7 +4,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/sammy00/bip32"
+	"github.com/sammyne/bip32"
 )
 
 type childGoldie struct {

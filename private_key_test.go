@@ -7,8 +7,8 @@ import (
 
 	"github.com/btcsuite/btcd/chaincfg"
 
-	"github.com/sammy00/base58"
-	"github.com/sammy00/bip32"
+	"github.com/sammyne/base58"
+	"github.com/sammyne/bip32"
 )
 
 func TestPrivateKey_AddressPubKeyHash(t *testing.T) {

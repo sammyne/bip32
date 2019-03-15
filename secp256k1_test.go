@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/btcsuite/btcd/btcec"
-	"github.com/sammy00/bip32"
+	"github.com/sammyne/bip32"
 )
 
 func TestToUsableScalar(t *testing.T) {

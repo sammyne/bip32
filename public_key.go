@@ -8,7 +8,7 @@ import (
 
 	"github.com/btcsuite/btcd/btcec"
 	"github.com/btcsuite/btcutil"
-	"github.com/sammy00/base58"
+	"github.com/sammyne/base58"
 )
 
 type PublicKey struct {

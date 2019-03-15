@@ -11,7 +11,7 @@ import (
 
 	"github.com/btcsuite/btcd/btcec"
 	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/sammy00/base58"
+	"github.com/sammyne/base58"
 )
 
 type PrivateKey struct {

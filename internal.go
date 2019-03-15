@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 
 	"github.com/btcsuite/btcd/btcec"
-	"github.com/sammy00/base58"
+	"github.com/sammyne/base58"
 )
 
 func appendMeta(buf []byte, pub *PublicKey) []byte {

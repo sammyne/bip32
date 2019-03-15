@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/sammy00/base58"
+	"github.com/sammyne/base58"
 )
 
 func Test_decodePublicKey(t *testing.T) {

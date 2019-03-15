@@ -1,9 +1,9 @@
 hdkeychain
 ==========
 
-[![CircleCI](https://circleci.com/gh/sammy00/bip32.svg?style=svg)](https://circleci.com/gh/sammy00/bip32) 
-[![codecov](https://codecov.io/gh/sammy00/bip32/branch/master/graph/badge.svg)](https://codecov.io/gh/sammy00/bip32) 
-[![Go Report Card](https://goreportcard.com/badge/github.com/sammy00/bip32)](https://goreportcard.com/report/github.com/sammy00/bip32) 
+[![CircleCI](https://circleci.com/gh/sammyne/bip32.svg?style=svg)](https://circleci.com/gh/sammyne/bip32) 
+[![codecov](https://codecov.io/gh/sammyne/bip32/branch/master/graph/badge.svg)](https://codecov.io/gh/sammyne/bip32) 
+[![Go Report Card](https://goreportcard.com/badge/github.com/sammyne/bip32)](https://goreportcard.com/report/github.com/sammyne/bip32) 
 [![LICENSE](https://img.shields.io/badge/license-ISC-blue.svg)](LICENSE) 
 
 Package hdkeychain provides an API for bitcoin hierarchical deterministic

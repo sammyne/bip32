@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/sammy00/bip32"
+	"github.com/sammyne/bip32"
 )
 
 // dummy test for coverage report

@@ -9,9 +9,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/sammy00/base58"
+	"github.com/sammyne/base58"
 
-	"github.com/sammy00/bip32"
+	"github.com/sammyne/bip32"
 )
 
 // This example demonstrates how to generate a cryptographically random seed

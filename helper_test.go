@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/sammy00/bip32"
+	"github.com/sammyne/bip32"
 )
 
 type NewMasterKeyGoldie struct {
