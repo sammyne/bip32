@@ -11,7 +11,7 @@ Package `bip32` provides an API for bitcoin hierarchical deterministic
 extended keys (BIP0032).
 
 A comprehensive suite of tests is provided to ensure proper functionality. See
-[codecov](https://codecov.io/gh/sammy00/bip32) for the coverage report.
+[codecov](https://codecov.io/gh/sammyne/bip32) for the coverage report.
 
 ## Feature Overview
 
@@ -39,16 +39,20 @@ A comprehensive suite of tests is provided to ensure proper functionality. See
 ## Installation and Updating
 
 ```bash
-$ go get -u github.com/sammy00/bip32
+$ go get -u github.com/sammyne/bip32
 ```
 
 ## Examples
 
-- [NewMaster Example](http://godoc.org/github.com/btcsuite/btcutil/hdkeychain#example-NewMaster)  
+- [NewMasterKey Example](https://godoc.org/github.com/sammyne/bip32#example-NewMasterKey)
+
   Demonstrates how to generate a cryptographically random seed then use it to
   create a new master node (extended key).
-- [Default Wallet Layout Example](http://godoc.org/github.com/btcsuite/btcutil/hdkeychain#example-package--DefaultWalletLayout)  
+
+- [Default Wallet Layout Example](https://godoc.org/github.com/sammyne/bip32#example-package--DefaultWalletLayout)  
   Demonstrates the default hierarchical deterministic wallet layout as described
   in BIP0032.
-- [Audits Use Case Example](http://godoc.org/github.com/btcsuite/btcutil/hdkeychain#example-package--Audits)  
-  Demonstrates the audits use case in BIP0032.
+- ~~[Audits Use Case Example](http://godoc.org/github.com/btcsuite/btcutil/hdkeychain#example-package--Audits)~~  
+  ~~Demonstrates the audits use case in BIP0032.~~
+- [Public Key Wallet Layout Example](https://godoc.org/github.com/sammyne/bip32#example-package--DefaultWalletLayout)  
+  Demonstrates a simple HD wallet layout
