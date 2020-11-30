@@ -1,5 +1,7 @@
 module github.com/sammyne/bip32
 
+go 1.15
+
 require (
 	github.com/btcsuite/btcd v0.0.0-20181013004428-67e573d211ac
 	github.com/btcsuite/btcutil v0.0.0-20180706230648-ab6388e0c60a
