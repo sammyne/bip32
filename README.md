@@ -1,6 +1,8 @@
 # bip32
 
-[![CircleCI](https://circleci.com/gh/sammyne/bip32.svg?style=svg)](https://circleci.com/gh/sammyne/bip32)
+[![build](https://github.com/sammyne/bip32/workflows/build/badge.svg)](https://github.com/sammyne/bip32/actions?query=workflow%3Abuild)
+[![PkgGoDev](https://pkg.go.dev/badge/mod/github.com/sammyne/bip32)](https://pkg.go.dev/mod/github.com/sammyne/bip32)
+![minimum go](https://img.shields.io/badge/go-1.15%2B-blue)
 [![codecov](https://codecov.io/gh/sammyne/bip32/branch/master/graph/badge.svg)](https://codecov.io/gh/sammyne/bip32)
 [![Go Report Card](https://goreportcard.com/badge/github.com/sammyne/bip32)](https://goreportcard.com/report/github.com/sammyne/bip32)
 [![LICENSE](https://img.shields.io/badge/license-ISC-blue.svg)](LICENSE)
