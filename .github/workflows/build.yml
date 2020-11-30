@@ -21,6 +21,13 @@ jobs:
       CODECOV_TOKEN: 701e86bd-1c7e-43ee-903d-f73944e464c0 # for codecov
     steps:
       - uses: actions/checkout@v2
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
       - name: Run tests
         run: | # -race wouldn't be supported without gcc
           go test -v -race $(go list ./... | grep -v /vendor/) -coverprofile=coverage.txt &&
