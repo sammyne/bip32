@@ -1,8 +1,6 @@
 package bip32
 
 import (
-	"bytes"
-	"encoding/hex"
 	"reflect"
 	"testing"
 
@@ -73,6 +71,7 @@ func Test_decodePublicKey(t *testing.T) {
 	}
 }
 
+/*
 func Test_derivePublicKey(t *testing.T) {
 	// test vector decoded from the golden as specified in testdata/bip32.golden
 	testCases := []struct {
@@ -146,3 +145,4 @@ func Test_derivePublicKey(t *testing.T) {
 		}
 	}
 }
+*/

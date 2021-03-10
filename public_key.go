@@ -7,7 +7,6 @@ import (
 	"encoding/binary"
 	"math"
 
-	"github.com/btcsuite/btcd/btcec"
 	"github.com/btcsuite/btcutil"
 	"github.com/sammyne/base58"
 )
@@ -71,7 +70,8 @@ func (pub *PublicKey) Child(i uint32) (ExtendedKey, error) {
 
 	// Calculate the corresponding intermediate public key for
 	// intermediate private key.
-	x, y := btcec.S256().ScalarBaseMult(IL)
+	//x, y := btcec.S256().ScalarBaseMult(IL)
+	x, y := curve.ScalarBaseMult(IL)
 	if x.Sign() == 0 || y.Sign() == 0 {
 		return nil, ErrInvalidChild
 	}
@@ -79,7 +79,7 @@ func (pub *PublicKey) Child(i uint32) (ExtendedKey, error) {
 	// Convert the serialized compressed parent public key into X
 	// and Y coordinates so it can be added to the intermediate
 	// public key.
-	Kp, err := btcec.ParsePubKey(pub.Data, secp256k1Curve)
+	Kp, err := ParseECPublicKey(pub.Data)
 	if err != nil {
 		return nil, err
 	}
@@ -88,8 +88,9 @@ func (pub *PublicKey) Child(i uint32) (ExtendedKey, error) {
 	// derive the final child key.
 	//
 	// childKey = serP(point(parse256(I_L)) + K_par)
-	x, y = secp256k1Curve.Add(x, y, Kp.X, Kp.Y)
-	child := btcec.PublicKey{Curve: secp256k1Curve, X: x, Y: y}
+	//x, y = curve.Add(x, y, Kp.X, Kp.Y)
+	//child := btcec.PublicKey{Curve: secp256k1Curve, X: x, Y: y}
+	child := NewECPublicKey(curve.Add(x, y, Kp.X, Kp.Y))
 	childData := child.SerializeCompressed()
 
 	FP := btcutil.Hash160(pub.Data)[:FingerprintLen]
@@ -129,8 +130,9 @@ func (pub *PublicKey) ParentFingerprint() uint32 {
 }
 
 // Public implements ExtendedKey
-func (pub *PublicKey) Public() (*btcec.PublicKey, error) {
-	return btcec.ParsePubKey(pub.Data, secp256k1Curve)
+func (pub *PublicKey) Public() (*ECPublicKey, error) {
+	//return btcec.ParsePubKey(pub.Data, secp256k1Curve)
+	return ParseECPublicKey(pub.Data)
 }
 
 // SetNet implements ExtendedKey
@@ -228,7 +230,8 @@ func ParsePublicKey(data58 string) (*PublicKey, error) {
 	pub.Data = decoded[a:b]
 
 	// on-curve checking
-	if _, err := btcec.ParsePubKey(pub.Data, secp256k1Curve); nil != err {
+	//if _, err := btcec.ParsePubKey(pub.Data, secp256k1Curve); nil != err {
+	if _, err := ParseECPublicKey(pub.Data); err != nil {
 		return nil, err
 	}
 

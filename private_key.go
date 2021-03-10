@@ -10,7 +10,6 @@ import (
 
 	"github.com/btcsuite/btcutil"
 
-	"github.com/btcsuite/btcd/btcec"
 	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/sammyne/base58"
 )
@@ -77,7 +76,7 @@ func (priv *PrivateKey) Child(i uint32) (ExtendedKey, error) {
 	// childKey = parse256(IL) + parenKey
 	k := new(big.Int).SetBytes(priv.Data)
 	z.Add(z, k)
-	z.Mod(z, secp256k1Curve.N)
+	z.Mod(z, curve.Params().N)
 	childData := z.Bytes()
 
 	// The fingerprint of the parent for the derived child is the first 4
@@ -121,8 +120,8 @@ func (priv *PrivateKey) Neuter() (*PublicKey, error) {
 }
 
 // Public implements ExtendedKey
-func (priv *PrivateKey) Public() (*btcec.PublicKey, error) {
-	return btcec.ParsePubKey(priv.publicKeyData(), secp256k1Curve)
+func (priv *PrivateKey) Public() (*ECPublicKey, error) {
+	return ParseECPublicKey(priv.publicKeyData())
 }
 
 // SetNet implements ExtendedKey
@@ -150,8 +149,8 @@ func (priv *PrivateKey) String() string {
 // ToECPrivate converts the extended key to a btcec private key and returns it.
 // As you might imagine this is only possible if the extended key is a private
 // extended key.
-func (priv *PrivateKey) ToECPrivate() *btcec.PrivateKey {
-	privKey, _ := btcec.PrivKeyFromBytes(secp256k1Curve, priv.Data)
+func (priv *PrivateKey) ToECPrivate() *ECPrivateKey {
+	privKey, _ := ParseECPrivateKey(priv.Data)
 
 	return privKey
 }
@@ -172,10 +171,7 @@ func (priv *PrivateKey) Zero() {
 // key is initialised, and initialise it if necessary.
 func (priv *PrivateKey) publicKeyData() []byte {
 	if 0 == len(priv.PublicKey.Data) {
-		x, y := secp256k1Curve.ScalarBaseMult(priv.Data)
-		pubKey := btcec.PublicKey{Curve: secp256k1Curve, X: x, Y: y}
-
-		priv.PublicKey.Data = pubKey.SerializeCompressed()
+		priv.PublicKey.Data = DeriveECPublicKey(priv.Data).SerializeCompressed()
 	}
 
 	return priv.PublicKey.Data

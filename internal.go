@@ -3,7 +3,6 @@ package bip32
 import (
 	"encoding/binary"
 
-	"github.com/btcsuite/btcd/btcec"
 	"github.com/sammyne/base58"
 )
 
@@ -70,10 +69,10 @@ func decodePublicKey(data58 string) (*PublicKey, error) {
 
 // derivePublicKey calculates the public key corresponding to the input
 // private key, and output the public key data in compressed form.
-func derivePublicKey(priv []byte) []byte {
-	// load the public key data eagerly
-	x, y := secp256k1Curve.ScalarBaseMult(priv)
-	pubKey := btcec.PublicKey{Curve: secp256k1Curve, X: x, Y: y}
-
-	return pubKey.SerializeCompressed()
-}
+//func derivePublicKey(priv []byte) []byte {
+//	// load the public key data eagerly
+//	x, y := secp256k1Curve.ScalarBaseMult(priv)
+//	pubKey := btcec.PublicKey{Curve: secp256k1Curve, X: x, Y: y}
+//
+//	return pubKey.SerializeCompressed()
+//}

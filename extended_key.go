@@ -1,7 +1,5 @@
 package bip32
 
-import "github.com/btcsuite/btcd/btcec"
-
 // References:
 //   [BIP32]: BIP0032 - Hierarchical Deterministic Wallets
 //   https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
@@ -63,7 +61,7 @@ type ExtendedKey interface {
 	// https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#key-identifiers
 	ParentFingerprint() uint32
 	// Public converts the extended key to a btcec public key and returns it.
-	Public() (*btcec.PublicKey, error)
+	Public() (*ECPublicKey, error)
 	// SetNet associates the extended key, and any child keys yet to be derived
 	// from it, with the passed network.
 	SetNet(keyID Magic)
